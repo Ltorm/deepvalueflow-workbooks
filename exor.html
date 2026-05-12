@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exor N.V. (EXXRF) — SOTP Workbook · Deep Value Flow</title>
+<meta name="description" content="Live NAV-based valuation for Exor (Agnelli family). Ferrari + Stellantis + CNH + Philips + Juventus + healthcare + Lingotto.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Exor N.V. SOTP — Live Workbook">
+<meta property="og:description" content="The European Berkshire. Ferrari + Stellantis + CNH + Philips + Juventus, with live look-through NAV calculation.">
+<meta property="og:site_name" content="Deep Value Flow">
+<style>
+  :root{--bg:#0f1115;--panel:#161922;--line:#2a2f3a;--ink:#e6e8ee;--mute:#8a93a6;--pos:#3ecf8e;--neg:#ef6b6b;--warn:#e7b13d;--acc:#6ea8ff}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  header{padding:18px 24px;border-bottom:1px solid var(--line);background:var(--panel)}
+  h1{margin:0;font-size:18px} h2{margin:0 0 8px;font-size:14px;color:var(--acc);text-transform:uppercase;letter-spacing:.5px}
+  .sub{color:var(--mute);font-size:12px;margin-top:4px}
+  main{padding:18px 24px;max-width:1400px;margin:0 auto}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+  th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;font-size:12px}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--mute);font-weight:500;text-transform:uppercase;font-size:10px;letter-spacing:.4px}
+  tfoot td{border-top:1px solid var(--line);border-bottom:none;font-weight:600}
+  input[type=number]{width:100px;background:#0b0d12;border:1px solid var(--line);color:var(--ink);padding:3px 6px;border-radius:4px;text-align:right;font-variant-numeric:tabular-nums}
+  input[type=number]:focus{outline:1px solid var(--acc);border-color:var(--acc)}
+  .num{font-variant-numeric:tabular-nums} .mute{color:var(--mute)} .pos{color:var(--pos)} .neg{color:var(--neg)}
+  .pillrow{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 0}
+  .pill{background:#0b0d12;border:1px solid var(--line);border-radius:6px;padding:8px 12px;min-width:140px}
+  .pill .k{color:var(--mute);font-size:10px;text-transform:uppercase;letter-spacing:.4px}
+  .pill .v{font-size:16px;margin-top:2px;font-weight:600}
+  .disclaimer{font-size:11px;color:var(--mute);padding:8px 12px;background:#1a1208;border:1px solid #3a2a0a;border-radius:6px;margin-bottom:16px}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .btn{background:#0b0d12;border:1px solid var(--acc);color:var(--acc);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit}
+  .btn:hover{background:var(--acc);color:#0b0d12}
+  .stamp{font-size:11px;color:var(--mute)} .stamp .live{color:var(--pos)} .stamp .err{color:var(--neg)}
+  nav a{color:var(--mute);text-decoration:none;font-size:12px;margin-right:14px} nav a:hover{color:var(--acc)}
+</style>
+</head>
+<body>
+
+<header>
+  <nav><a href="/">← Deep Value Flow workbooks</a></nav>
+  <h1>Exor N.V. (EXO.AS / EXXRF) — NAV Workbook</h1>
+  <div class="sub">"European Berkshire" — Agnelli family holdco. NAV at look-through to listed stakes + private at carrying value. Currency: <b>EUR</b> native; USD ADR ref via EXXRF. Historic holdco discount: 25–40%.</div>
+  <div class="topbar">
+    <span class="stamp" id="priceStamp">Prices: loading…</span>
+    <button class="btn" id="refreshBtn" type="button">↻ Refresh prices</button>
+  </div>
+</header>
+
+<main>
+
+<div class="disclaimer">
+  <b>Methodology:</b>
+  (1) Listed stakes: <b>Exor's % × underlying market cap</b>. Live prices fetched for RACE/STLA/CNH/PHG (US ADRs).
+  (2) Private holdings (Juventus 100%, Lifenet, Institut Mérieux, Lingotto, Welltec, GEDI, etc.) at editable carrying value.
+  (3) Net cash position (~€4B liquidity per Q1'26) added back.
+  (4) Holdco discount applied at the end (preset toggle).
+  Self-disclosed NAV historically ~€20–22B; market cap ~€16–18B → discount ~25–30%.
+</div>
+
+<section>
+  <h2>Valuation presets</h2>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn preset" data-preset="bear" type="button">Bear (35% discount)</button>
+    <button class="btn preset" data-preset="base" type="button" style="border-color:var(--pos);color:var(--pos)">Base (25% discount — consensus)</button>
+    <button class="btn preset" data-preset="bull" type="button">Bull (10% discount — re-rate)</button>
+  </div>
+</section>
+
+<section>
+  <h2>Live SOTP per share (EUR)</h2>
+  <div class="pillrow">
+    <div class="pill"><div class="k">Listed stakes (look-through)</div><div class="v num" id="sumListed">€0</div></div>
+    <div class="pill"><div class="k">+ Private holdings</div><div class="v num" id="sumPriv">€0</div></div>
+    <div class="pill"><div class="k">+ Net cash / liquidity</div><div class="v num" id="sumCash">€0</div></div>
+    <div class="pill" style="border-color:var(--acc)"><div class="k">Gross NAV</div><div class="v num pos" id="sumNAV">€0</div></div>
+    <div class="pill" style="border-color:var(--acc)"><div class="k">× (1 – discount)</div><div class="v num" id="discFactor">×0.75</div></div>
+    <div class="pill" style="border-color:var(--pos);background:#0b1f15"><div class="k">SOTP / share</div><div class="v num pos" id="sumPerShare">€0</div></div>
+    <div class="pill"><div class="k">EXXRF (USD)</div><div class="v num" id="mktPriceUSD">$0</div></div>
+    <div class="pill"><div class="k">EXO.AS (EUR equivalent)</div><div class="v num" id="mktPriceEUR">€0</div></div>
+  </div>
+</section>
+
+<section>
+  <h2>1. Listed stakes (Exor's % × underlying market cap)</h2>
+  <table id="listedTable">
+    <thead><tr><th>Company</th><th>US ADR</th><th>Mkt cap (€B)</th><th>Exor's %</th><th>Look-through (€B)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="4">Total listed</td><td class="num pos" id="listedTotal">—</td></tr></tfoot>
+  </table>
+  <p class="mute" style="font-size:11px;margin-top:6px">Live ADR prices estimate mkt cap by: price × ADR ratio × total shares × FX. Override mkt cap directly if you have a better number.</p>
+</section>
+
+<section>
+  <h2>2. Private &amp; venture holdings (carrying value × haircut)</h2>
+  <table id="privTable">
+    <thead><tr><th>Holding</th><th>Description</th><th>Carry (€M)</th><th>Haircut %</th><th>SOTP value (€M)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="4">Total private</td><td class="num pos" id="privTotal">—</td></tr></tfoot>
+  </table>
+</section>
+
+<section>
+  <h2>3. Net liquidity</h2>
+  <table id="cashTable">
+    <thead><tr><th>Item</th><th>Note</th><th>Value (€M)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="2">Total net liquidity</td><td class="num pos" id="cashTotal">—</td></tr></tfoot>
+  </table>
+</section>
+
+<section>
+  <h2>Share count, FX &amp; market</h2>
+  <table>
+    <tr><td>Shares outstanding (M)</td><td><input type="number" id="shares" value="221" step="1"></td><td class="mute">M</td></tr>
+    <tr><td>Holdco discount (override)</td><td><input type="number" id="discount" value="25" step="1"></td><td class="mute">%</td></tr>
+    <tr><td>EUR / USD FX</td><td><input type="number" id="fx" value="0.92" step="0.01"></td><td class="mute">1 USD = X EUR</td></tr>
+    <tr><td>EXXRF (USD)</td><td><input type="number" id="marketPriceUSD" value="95" step="0.5"></td><td class="mute">USD</td></tr>
+  </table>
+</section>
+
+<div class="disclaimer"><b>Not investment advice.</b> Sources: Exor FY2024 annual results, H1 2025 NAV update, Q1 2026 trading update.</div>
+</main>
+
+<script type="module">
+
+// Listed stakes — Exor's % ownership and ADR ticker for live pricing.
+// mktCap in €B; user can override directly.
+const listedCore = [
+  {name:"Ferrari N.V.",          ust:"RACE", pct:21.0, mktCap:90.0,  note:"Trimmed from 24%"},
+  {name:"Stellantis N.V.",       ust:"STLA", pct:15.5, mktCap:34.0,  note:"Autos pressured"},
+  {name:"CNH Industrial",        ust:"CNH",  pct:26.9, mktCap:14.5,  note:"Ag equipment"},
+  {name:"Philips N.V.",           ust:"PHG", pct:19.0, mktCap:24.0,  note:"Medical tech"},
+];
+const privateHoldings = [
+  {name:"Juventus FC (100%)",          desc:"Italian football club",                carry:600,  haircut:20},
+  {name:"Institut Mérieux (~10%)",     desc:"Private healthcare (BioMérieux family)", carry:1200, haircut:15},
+  {name:"Lifenet Healthcare",          desc:"Italian hospital operator",            carry:400,  haircut:25},
+  {name:"Lingotto Investment Mgmt",    desc:"Asset management JV w/ Lupotto",       carry:200,  haircut:20},
+  {name:"Welltec",                      desc:"Oil services (~25%)",                  carry:150,  haircut:30},
+  {name:"GEDI Gruppo Editoriale",       desc:"Italian media (100%)",                  carry:250,  haircut:30},
+  {name:"Other ventures (Lifenet+other)",desc:"Misc. PE / VC",                        carry:500,  haircut:25},
+];
+const cashLines = [
+  {name:"Cash & equivalents",         note:"Q1'26 ~€4.0B",            value:4000},
+  {name:"Expected disposal proceeds + FCF 2026", note:"Per management guide", value:-300}, // simplifying
+];
+
+const PRESETS = {
+  bear: { discount:35, privBump:20 },
+  base: { discount:25, privBump:0  },
+  bull: { discount:10, privBump:-5 },
+};
+
+const fmtEB = n => "€" + n.toLocaleString("en-US",{maximumFractionDigits:1,minimumFractionDigits:1}) + "B";
+const fmtEM = n => "€" + n.toLocaleString("en-US",{maximumFractionDigits:0}) + "M";
+const fmtE  = n => "€" + n.toLocaleString("en-US",{maximumFractionDigits:2,minimumFractionDigits:2});
+
+function build(){
+  const lt=document.querySelector("#listedTable tbody"); lt.innerHTML="";
+  listedCore.forEach((h,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><b>${h.name}</b><br><span class="mute" style="font-size:10px">${h.note||""}</span></td><td>${h.ust}</td>
+      <td><input type="number" step="0.5" data-listed="${i}" data-f="mktCap" value="${h.mktCap}"></td>
+      <td><input type="number" step="0.1" data-listed="${i}" data-f="pct" value="${h.pct}"></td>
+      <td class="num pos" data-listedval="${i}"></td>`;
+    lt.appendChild(tr);
+  });
+  const pt=document.querySelector("#privTable tbody"); pt.innerHTML="";
+  privateHoldings.forEach((p,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><b>${p.name}</b></td><td class="mute">${p.desc}</td>
+      <td><input type="number" step="10" data-priv="${i}" data-f="carry" value="${p.carry}"></td>
+      <td><input type="number" step="1" data-priv="${i}" data-f="haircut" value="${p.haircut}"></td>
+      <td class="num pos" data-privval="${i}"></td>`;
+    pt.appendChild(tr);
+  });
+  const ct=document.querySelector("#cashTable tbody"); ct.innerHTML="";
+  cashLines.forEach((c,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${c.name}</td><td class="mute">${c.note}</td>
+      <td><input type="number" step="50" data-cash="${i}" data-f="value" value="${c.value}"></td>`;
+    ct.appendChild(tr);
+  });
+}
+
+function recalc(){
+  let listedTotal=0;
+  listedCore.forEach((h,i)=>{
+    const v=h.mktCap*(h.pct/100);
+    listedTotal+=v;
+    document.querySelector(`[data-listedval="${i}"]`).textContent=fmtEB(v);
+  });
+  document.getElementById("listedTotal").textContent=fmtEB(listedTotal);
+
+  let privTotal=0;
+  privateHoldings.forEach((p,i)=>{
+    const v=p.carry*(1-p.haircut/100);
+    privTotal+=v;
+    document.querySelector(`[data-privval="${i}"]`).textContent=fmtEM(v);
+  });
+  document.getElementById("privTotal").textContent=fmtEM(privTotal);
+  const privTotalB = privTotal/1000;
+
+  let cashTotal=0;
+  cashLines.forEach(c=>cashTotal+=c.value);
+  document.getElementById("cashTotal").textContent=fmtEM(cashTotal);
+  const cashTotalB = cashTotal/1000;
+
+  const grossNAV = listedTotal + privTotalB + cashTotalB;
+  const disc=(parseFloat(document.getElementById("discount").value)||0)/100;
+  const sotp = grossNAV*(1-disc);
+  const shares=parseFloat(document.getElementById("shares").value)||1;
+  const perShare = (sotp*1000)/shares;
+  const mktUSD=parseFloat(document.getElementById("marketPriceUSD").value)||0;
+  const fx=parseFloat(document.getElementById("fx").value)||1;
+  const mktEUR=mktUSD*fx;
+
+  document.getElementById("sumListed").textContent=fmtEB(listedTotal);
+  document.getElementById("sumPriv").textContent=fmtEB(privTotalB);
+  document.getElementById("sumCash").textContent=fmtEB(cashTotalB);
+  document.getElementById("sumNAV").textContent=fmtEB(grossNAV);
+  document.getElementById("discFactor").textContent="×"+(1-disc).toFixed(2);
+  document.getElementById("sumPerShare").textContent=fmtE(perShare);
+  document.getElementById("mktPriceUSD").textContent="$"+mktUSD.toFixed(2);
+  document.getElementById("mktPriceEUR").textContent=fmtE(mktEUR);
+}
+
+document.addEventListener("input", e=>{
+  const el=e.target;
+  if(el.dataset.listed!=null) listedCore[el.dataset.listed][el.dataset.f]=parseFloat(el.value)||0;
+  if(el.dataset.priv!=null) privateHoldings[el.dataset.priv][el.dataset.f]=parseFloat(el.value)||0;
+  if(el.dataset.cash!=null) cashLines[el.dataset.cash][el.dataset.f]=parseFloat(el.value)||0;
+  recalc();
+});
+
+function applyPreset(k){
+  const p=PRESETS[k]; if(!p) return;
+  document.getElementById("discount").value=p.discount;
+  privateHoldings.forEach(pv=>{ pv.haircut=Math.max(0,Math.min(80, pv.haircut + p.privBump)); });
+  document.querySelectorAll('[data-priv][data-f="haircut"]').forEach((el,i)=>el.value=privateHoldings[i].haircut);
+  recalc();
+}
+document.querySelectorAll(".preset").forEach(b=>b.addEventListener("click",()=>applyPreset(b.dataset.preset)));
+
+build(); recalc();
+
+import { priceMap as fetchPriceMap } from "/shared/prices.js";
+const stampEl=document.getElementById("priceStamp"), btn=document.getElementById("refreshBtn");
+async function refreshPrices(){
+  btn.disabled=true; const old=btn.textContent; btn.textContent="Fetching…";
+  try{
+    const {map,fetchedAt}=await fetchPriceMap(["EXXRF"],{force:true});
+    if(typeof map.EXXRF==="number") document.getElementById("marketPriceUSD").value=map.EXXRF.toFixed(2);
+    recalc();
+    const dt=new Date(fetchedAt);
+    stampEl.innerHTML=`<span class="live">● Live</span> · EXXRF refreshed @ ${dt.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"})}`;
+  }catch(e){ stampEl.innerHTML=`<span class="err">⚠ ${e.message}</span>`; }
+  finally{ btn.disabled=false; btn.textContent=old; }
+}
+btn.addEventListener("click",refreshPrices);
+refreshPrices();
+</script>
+</body>
+</html>

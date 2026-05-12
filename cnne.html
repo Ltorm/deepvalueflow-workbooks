@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cannae Holdings (CNNE) — SOTP Workbook · Deep Value Flow</title>
+<meta name="description" content="Live NAV-based valuation for Cannae Holdings (Bill Foley's holdco). Post-D&B sale: cash + Alight + Black Knight Football + private stakes.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Cannae Holdings SOTP — Live Workbook">
+<meta property="og:description" content="Bill Foley's holdco. Sold D&B for $630M in 2025, aggressively buying back. Persistent NAV discount of 30-40%.">
+<meta property="og:site_name" content="Deep Value Flow">
+<style>
+  :root{--bg:#0f1115;--panel:#161922;--line:#2a2f3a;--ink:#e6e8ee;--mute:#8a93a6;--pos:#3ecf8e;--neg:#ef6b6b;--warn:#e7b13d;--acc:#6ea8ff}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  header{padding:18px 24px;border-bottom:1px solid var(--line);background:var(--panel)}
+  h1{margin:0;font-size:18px} h2{margin:0 0 8px;font-size:14px;color:var(--acc);text-transform:uppercase;letter-spacing:.5px}
+  .sub{color:var(--mute);font-size:12px;margin-top:4px}
+  main{padding:18px 24px;max-width:1400px;margin:0 auto}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+  th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;font-size:12px}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--mute);font-weight:500;text-transform:uppercase;font-size:10px;letter-spacing:.4px}
+  tfoot td{border-top:1px solid var(--line);border-bottom:none;font-weight:600}
+  input[type=number]{width:100px;background:#0b0d12;border:1px solid var(--line);color:var(--ink);padding:3px 6px;border-radius:4px;text-align:right;font-variant-numeric:tabular-nums}
+  input[type=number]:focus{outline:1px solid var(--acc);border-color:var(--acc)}
+  .num{font-variant-numeric:tabular-nums} .mute{color:var(--mute)} .pos{color:var(--pos)} .neg{color:var(--neg)}
+  .pillrow{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 0}
+  .pill{background:#0b0d12;border:1px solid var(--line);border-radius:6px;padding:8px 12px;min-width:140px}
+  .pill .k{color:var(--mute);font-size:10px;text-transform:uppercase;letter-spacing:.4px}
+  .pill .v{font-size:16px;margin-top:2px;font-weight:600}
+  .disclaimer{font-size:11px;color:var(--mute);padding:8px 12px;background:#1a1208;border:1px solid #3a2a0a;border-radius:6px;margin-bottom:16px}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .btn{background:#0b0d12;border:1px solid var(--acc);color:var(--acc);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit}
+  .btn:hover{background:var(--acc);color:#0b0d12}
+  .stamp{font-size:11px;color:var(--mute)} .stamp .live{color:var(--pos)} .stamp .err{color:var(--neg)}
+  nav a{color:var(--mute);text-decoration:none;font-size:12px;margin-right:14px} nav a:hover{color:var(--acc)}
+</style>
+</head>
+<body>
+
+<header>
+  <nav><a href="/">← Deep Value Flow workbooks</a></nav>
+  <h1>Cannae Holdings (CNNE) — Sum-of-the-Parts Workbook</h1>
+  <div class="sub">Bill Foley's holdco. Major 2025 events: <b>sold D&B for $630M</b>, bought back $323M of stock (28% of float). 46.4M shares now. NAV discount has historically been 30–40%.</div>
+  <div class="topbar">
+    <span class="stamp" id="priceStamp">Prices: loading…</span>
+    <button class="btn" id="refreshBtn" type="button">↻ Refresh prices</button>
+  </div>
+</header>
+
+<main>
+
+<div class="disclaimer">
+  <b>Methodology — NAV at look-through:</b>
+  (1) Alight stake at market (BRC's largest remaining public position).
+  (2) Black Knight Football Club (BKFC) — private; carry value disclosed quarterly.
+  (3) Other private positions (System One, Sightline residual, Computer Services, etc.) at carry × haircut.
+  (4) Cash net of debt — large now post-D&B sale.
+  (5) Self-disclosed NAV per investor presentations ~$28–32; market at ~$18 → 35–45% discount.
+</div>
+
+<section>
+  <h2>Valuation presets</h2>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn preset" data-preset="bear" type="button">Bear (deep haircuts)</button>
+    <button class="btn preset" data-preset="base" type="button" style="border-color:var(--pos);color:var(--pos)">Base (~$28 NAV)</button>
+    <button class="btn preset" data-preset="bull" type="button">Bull (full carry)</button>
+  </div>
+</section>
+
+<section>
+  <h2>Live SOTP per share</h2>
+  <div class="pillrow">
+    <div class="pill"><div class="k">Public stakes (Alight)</div><div class="v num" id="sumPublic">$0</div></div>
+    <div class="pill"><div class="k">+ Private investments</div><div class="v num" id="sumPriv">$0</div></div>
+    <div class="pill"><div class="k">+ Net cash</div><div class="v num" id="sumCash">$0</div></div>
+    <div class="pill" style="border-color:var(--acc)"><div class="k">Gross NAV</div><div class="v num pos" id="sumNAV">$0</div></div>
+    <div class="pill" style="border-color:var(--acc)"><div class="k">÷ Shares</div><div class="v num" id="sumShares">46.4M</div></div>
+    <div class="pill" style="border-color:var(--pos);background:#0b1f15"><div class="k">NAV / share</div><div class="v num pos" id="sumPerShare">$0</div></div>
+    <div class="pill"><div class="k">CNNE mkt price</div><div class="v num" id="mktPrice">$18</div></div>
+    <div class="pill"><div class="k">Discount to NAV</div><div class="v num" id="sumDisc">—</div></div>
+  </div>
+</section>
+
+<section>
+  <h2>1. Public equity stakes (at market)</h2>
+  <table id="publicTable">
+    <thead><tr><th>Holding</th><th>Ticker</th><th>CNNE's shares (M)</th><th>Price ($)</th><th>Value ($M)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="4">Total public stakes</td><td class="num pos" id="publicTotal">—</td></tr></tfoot>
+  </table>
+</section>
+
+<section>
+  <h2>2. Private investments (carry × haircut)</h2>
+  <table id="privTable">
+    <thead><tr><th>Investment</th><th>Description</th><th>Carry ($M)</th><th>Haircut %</th><th>SOTP value ($M)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="4">Total private</td><td class="num pos" id="privTotal">—</td></tr></tfoot>
+  </table>
+</section>
+
+<section>
+  <h2>3. Cash &amp; debt (post-D&B sale + buybacks)</h2>
+  <table id="cashTable">
+    <thead><tr><th>Item</th><th>Note</th><th>Value ($M)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="2">Net</td><td class="num pos" id="cashTotal">—</td></tr></tfoot>
+  </table>
+</section>
+
+<section>
+  <h2>Share count &amp; market</h2>
+  <table>
+    <tr><td>Shares outstanding (M)</td><td><input type="number" id="shares" value="46.4" step="0.1"></td><td class="mute">M (post buybacks)</td></tr>
+    <tr><td>Current CNNE price ($)</td><td><input type="number" id="marketPrice" value="18.00" step="0.01"></td><td class="mute">$</td></tr>
+  </table>
+</section>
+
+<div class="disclaimer"><b>Not investment advice.</b> Sources: CNNE Q1 2026 earnings (May 11 2026 release), CNNE Summer 2025 investor presentation.</div>
+</main>
+
+<script type="module">
+
+// Public stakes — CNNE retains Alight as largest position. Other smaller pieces.
+const publicStakes = [
+  {name:"Alight",                    tkr:"ALIT", shares:34.0, price:6.50 },
+  {name:"Computer Services (CSI)",   tkr:"CSVI", shares:0.3,  price:80.00},
+  {name:"Paysafe",                   tkr:"PSFE", shares:1.2,  price:14.00},
+];
+
+// Private — Black Knight Football is the famous one (Premier League/Bournemouth + Auckland + Lorient)
+const privateInvestments = [
+  {name:"Black Knight Football Club", desc:"AFC Bournemouth + Auckland + Lorient + Hibernian + Lommel", carry:380, haircut:25},
+  {name:"AmeriLife",                  desc:"Insurance distribution (private)",                            carry:300, haircut:20},
+  {name:"Senator Investment Group",   desc:"Foley/Senator partnership stake",                              carry:50,  haircut:30},
+  {name:"D&B Football Inc.",          desc:"Sports media + assets",                                        carry:30,  haircut:30},
+  {name:"Other ventures",              desc:"System One residual, Sightline residual, OptimalBlue, etc.",  carry:120, haircut:35},
+];
+
+const cashLines = [
+  {name:"Cash & equivalents post-D&B",    note:"~$300M after buybacks + investments redeployed", value:280},
+  {name:"Margin / corporate debt",        note:"~$0 — paid down with D&B proceeds",              value:0  },
+];
+
+const PRESETS = {
+  bear: { privBump:15, alightPriceAdj:-1.0 },
+  base: { privBump:0,  alightPriceAdj:0    },
+  bull: { privBump:-10, alightPriceAdj:1.5 },
+};
+
+const fmtM=n=>(n>=0?"$":"–$")+Math.abs(n).toLocaleString("en-US",{maximumFractionDigits:0})+"M";
+const fmt$=n=>"$"+n.toLocaleString("en-US",{maximumFractionDigits:2,minimumFractionDigits:2});
+
+function build(){
+  const pt=document.querySelector("#publicTable tbody"); pt.innerHTML="";
+  publicStakes.forEach((h,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><b>${h.name}</b></td><td>${h.tkr}</td>
+      <td><input type="number" step="0.1" data-pub="${i}" data-f="shares" value="${h.shares}"></td>
+      <td><input type="number" step="0.01" data-pub="${i}" data-f="price" value="${h.price}"></td>
+      <td class="num pos" data-pubval="${i}"></td>`;
+    pt.appendChild(tr);
+  });
+  const rt=document.querySelector("#privTable tbody"); rt.innerHTML="";
+  privateInvestments.forEach((p,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><b>${p.name}</b></td><td class="mute">${p.desc}</td>
+      <td><input type="number" step="10" data-priv="${i}" data-f="carry" value="${p.carry}"></td>
+      <td><input type="number" step="1" data-priv="${i}" data-f="haircut" value="${p.haircut}"></td>
+      <td class="num pos" data-privval="${i}"></td>`;
+    rt.appendChild(tr);
+  });
+  const ct=document.querySelector("#cashTable tbody"); ct.innerHTML="";
+  cashLines.forEach((c,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${c.name}</td><td class="mute">${c.note}</td>
+      <td><input type="number" step="10" data-cash="${i}" data-f="value" value="${c.value}"></td>`;
+    ct.appendChild(tr);
+  });
+}
+
+function recalc(){
+  let publicTotal=0;
+  publicStakes.forEach((h,i)=>{
+    const v=h.shares*h.price;
+    publicTotal+=v;
+    document.querySelector(`[data-pubval="${i}"]`).textContent=fmtM(v);
+  });
+  document.getElementById("publicTotal").textContent=fmtM(publicTotal);
+
+  let privTotal=0;
+  privateInvestments.forEach((p,i)=>{
+    const v=p.carry*(1-p.haircut/100);
+    privTotal+=v;
+    document.querySelector(`[data-privval="${i}"]`).textContent=fmtM(v);
+  });
+  document.getElementById("privTotal").textContent=fmtM(privTotal);
+
+  let cashTotal=0;
+  cashLines.forEach(c=>cashTotal+=c.value);
+  document.getElementById("cashTotal").textContent=fmtM(cashTotal);
+
+  const shares=parseFloat(document.getElementById("shares").value)||1;
+  const mktPx=parseFloat(document.getElementById("marketPrice").value)||0;
+  const grossNAV = publicTotal + privTotal + cashTotal;
+  const perShare = grossNAV/shares;
+  const disc=(perShare-mktPx)/perShare;
+
+  document.getElementById("sumPublic").textContent=fmtM(publicTotal);
+  document.getElementById("sumPriv").textContent=fmtM(privTotal);
+  document.getElementById("sumCash").textContent=fmtM(cashTotal);
+  document.getElementById("sumNAV").textContent=fmtM(grossNAV);
+  document.getElementById("sumShares").textContent=shares.toFixed(1)+"M";
+  document.getElementById("sumPerShare").textContent=fmt$(perShare);
+  document.getElementById("mktPrice").textContent=fmt$(mktPx);
+  const dscEl=document.getElementById("sumDisc");
+  dscEl.textContent=(disc*100).toFixed(1)+"%";
+  dscEl.className="v num "+(disc>0?"pos":"neg");
+}
+
+document.addEventListener("input", e=>{
+  const el=e.target;
+  if(el.dataset.pub!=null) publicStakes[el.dataset.pub][el.dataset.f]=parseFloat(el.value)||0;
+  if(el.dataset.priv!=null) privateInvestments[el.dataset.priv][el.dataset.f]=parseFloat(el.value)||0;
+  if(el.dataset.cash!=null) cashLines[el.dataset.cash][el.dataset.f]=parseFloat(el.value)||0;
+  recalc();
+});
+
+function applyPreset(k){
+  const p=PRESETS[k]; if(!p) return;
+  privateInvestments.forEach(pv=>{ pv.haircut=Math.max(0,Math.min(80, pv.haircut + p.privBump)); });
+  publicStakes[0].price = Math.max(0.5, publicStakes[0].price + p.alightPriceAdj); // shift Alight target
+  document.querySelectorAll('[data-priv][data-f="haircut"]').forEach((el,i)=>el.value=privateInvestments[i].haircut);
+  document.querySelectorAll('[data-pub][data-f="price"]').forEach((el,i)=>el.value=publicStakes[i].price);
+  recalc();
+}
+document.querySelectorAll(".preset").forEach(b=>b.addEventListener("click",()=>applyPreset(b.dataset.preset)));
+
+build(); recalc();
+
+import { priceMap as fetchPriceMap } from "/shared/prices.js";
+const LIVE_TICKERS=["CNNE", ...publicStakes.map(h=>h.tkr)];
+const stampEl=document.getElementById("priceStamp"), btn=document.getElementById("refreshBtn");
+async function refreshPrices(){
+  btn.disabled=true; const old=btn.textContent; btn.textContent="Fetching…";
+  try{
+    const {map,fetchedAt}=await fetchPriceMap(LIVE_TICKERS,{force:true});
+    let u=0;
+    publicStakes.forEach(h=>{ if(typeof map[h.tkr]==="number"){ h.price=map[h.tkr]; u++; }});
+    if(typeof map.CNNE==="number") document.getElementById("marketPrice").value=map.CNNE.toFixed(2);
+    document.querySelectorAll('[data-pub][data-f="price"]').forEach((el,i)=>el.value=publicStakes[i].price.toFixed(2));
+    recalc();
+    const dt=new Date(fetchedAt);
+    stampEl.innerHTML=`<span class="live">● Live</span> · ${u} prices updated @ ${dt.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"})}`;
+  }catch(e){ stampEl.innerHTML=`<span class="err">⚠ ${e.message}</span>`; }
+  finally{ btn.disabled=false; btn.textContent=old; }
+}
+btn.addEventListener("click",refreshPrices);
+refreshPrices();
+</script>
+</body>
+</html>

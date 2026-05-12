@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Investor AB — SOTP Workbook · Deep Value Flow</title>
+<meta name="description" content="Live NAV-based valuation for Investor AB (Wallenberg family). Listed core (ABB, AstraZeneca, Atlas Copco, EQT, etc.) + Patricia Industries unlisted.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Investor AB SOTP — Live Workbook">
+<meta property="og:description" content="Wallenberg family holdco. NAV at look-through value of listed stakes + Patricia Industries.">
+<meta property="og:site_name" content="Deep Value Flow">
+<style>
+  :root{--bg:#0f1115;--panel:#161922;--line:#2a2f3a;--ink:#e6e8ee;--mute:#8a93a6;--pos:#3ecf8e;--neg:#ef6b6b;--warn:#e7b13d;--acc:#6ea8ff}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  header{padding:18px 24px;border-bottom:1px solid var(--line);background:var(--panel)}
+  h1{margin:0;font-size:18px} h2{margin:0 0 8px;font-size:14px;color:var(--acc);text-transform:uppercase;letter-spacing:.5px}
+  .sub{color:var(--mute);font-size:12px;margin-top:4px}
+  main{padding:18px 24px;max-width:1400px;margin:0 auto}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+  th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;font-size:12px}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--mute);font-weight:500;text-transform:uppercase;font-size:10px;letter-spacing:.4px}
+  tfoot td{border-top:1px solid var(--line);border-bottom:none;font-weight:600}
+  input[type=number]{width:100px;background:#0b0d12;border:1px solid var(--line);color:var(--ink);padding:3px 6px;border-radius:4px;text-align:right;font-variant-numeric:tabular-nums}
+  input[type=number]:focus{outline:1px solid var(--acc);border-color:var(--acc)}
+  .num{font-variant-numeric:tabular-nums} .mute{color:var(--mute)} .pos{color:var(--pos)} .neg{color:var(--neg)}
+  .pillrow{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 0}
+  .pill{background:#0b0d12;border:1px solid var(--line);border-radius:6px;padding:8px 12px;min-width:140px}
+  .pill .k{color:var(--mute);font-size:10px;text-transform:uppercase;letter-spacing:.4px}
+  .pill .v{font-size:16px;margin-top:2px;font-weight:600}
+  .disclaimer{font-size:11px;color:var(--mute);padding:8px 12px;background:#1a1208;border:1px solid #3a2a0a;border-radius:6px;margin-bottom:16px}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .btn{background:#0b0d12;border:1px solid var(--acc);color:var(--acc);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit}
+  .btn:hover{background:var(--acc);color:#0b0d12}
+  .stamp{font-size:11px;color:var(--mute)} .stamp .live{color:var(--pos)} .stamp .err{color:var(--neg)}
+  nav a{color:var(--mute);text-decoration:none;font-size:12px;margin-right:14px} nav a:hover{color:var(--acc)}
+</style>
+</head>
+<body>
+
+<header>
+  <nav><a href="/">← Deep Value Flow workbooks</a></nav>
+  <h1>Investor AB (Wallenberg family) — NAV Workbook</h1>
+  <div class="sub">Source data: Q1 2026 Interim Management Statement. NAV-based methodology: listed stakes at look-through market value + Patricia Industries (unlisted) at carrying value. Self-disclosed adjusted NAV per share Q1'26 = <b>SEK 367</b>.</div>
+  <div class="topbar">
+    <span class="stamp" id="priceStamp">Prices: loading…</span>
+    <button class="btn" id="refreshBtn" type="button">↻ Refresh prices</button>
+  </div>
+</header>
+
+<main>
+
+<div class="disclaimer">
+  <b>Methodology — NAV at look-through (not P/E or EV/EBITDA on Investor AB itself):</b>
+  (1) Each listed stake is valued at the equivalent of <b>Investor's % ownership × underlying market cap</b>.
+  (2) Patricia Industries (unlisted subs like Mölnlycke, Permobil, Piab, Sarnova, Vectura) is at carrying value, with editable haircut.
+  (3) EQT stake counted separately — listed but tied to fund-management economics.
+  (4) Workbook uses <b>USD ADR/OTC tickers</b> for live prices: ABBNY (ABB), AZN (AstraZeneca), ATLKY (Atlas Copco), ELUXY (Electrolux), ERIC (Ericsson), HUSQY (Husqvarna), NDAQ (Nasdaq), SAAB (Saab AB native), BHID (SEB), BIOVF (Sobi), WRTBF (Wärtsilä).
+  (5) <b>Net debt</b> ~SEK 50–60B at the parent level.
+</div>
+
+<section>
+  <h2>Valuation presets</h2>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn preset" data-preset="bear" type="button">Bear (20% holdco discount)</button>
+    <button class="btn preset" data-preset="base" type="button" style="border-color:var(--pos);color:var(--pos)">Base (8% discount — consensus)</button>
+    <button class="btn preset" data-preset="bull" type="button">Bull (no discount — at NAV)</button>
+  </div>
+</section>
+
+<section>
+  <h2>Live SOTP per share (in SEK)</h2>
+  <div class="pillrow">
+    <div class="pill"><div class="k">Listed core (look-through)</div><div class="v num" id="sumListed">SEK 0</div></div>
+    <div class="pill"><div class="k">+ EQT stake</div><div class="v num" id="sumEQT">SEK 0</div></div>
+    <div class="pill"><div class="k">+ Patricia Industries</div><div class="v num" id="sumPatricia">SEK 0</div></div>
+    <div class="pill"><div class="k">– Net debt</div><div class="v num neg" id="sumDebt">SEK 0</div></div>
+    <div class="pill" style="border-color:var(--acc)"><div class="k">Gross NAV</div><div class="v num pos" id="sumNAV">SEK 0</div></div>
+    <div class="pill" style="border-color:var(--acc)"><div class="k">× (1 – holdco discount)</div><div class="v num" id="discFactor">×0.92</div></div>
+    <div class="pill" style="border-color:var(--pos);background:#0b1f15"><div class="k">SOTP / share</div><div class="v num pos" id="sumPerShare">SEK 0</div></div>
+    <div class="pill"><div class="k">IVSXF (USD)</div><div class="v num" id="mktPriceUSD">$0</div></div>
+    <div class="pill"><div class="k">Self-disclosed NAV</div><div class="v num">SEK 367</div></div>
+  </div>
+</section>
+
+<section>
+  <h2>1. Listed core (Investor's % × underlying mkt cap)</h2>
+  <table id="listedTable">
+    <thead><tr>
+      <th>Holding</th><th>US ticker</th><th>Mkt cap (SEK B)</th>
+      <th>Investor's %</th><th>Look-through value (SEK B)</th>
+    </tr></thead><tbody></tbody>
+    <tfoot><tr><td colspan="4">Total listed core</td><td class="num pos" id="listedTotal">—</td></tr></tfoot>
+  </table>
+  <p class="mute" style="font-size:11px;margin-top:6px">Refresh prices and the US-ADR price will be used to estimate underlying market cap. Edit mkt-cap field manually if you have better data — Yahoo's ADR pricing approximates but isn't exact for cross-listed equities.</p>
+</section>
+
+<section>
+  <h2>2. EQT stake (listed but treated separately)</h2>
+  <table id="eqtTable">
+    <thead><tr><th>Stake</th><th>Ticker</th><th>Value (SEK B)</th><th>Notes</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="2">Total EQT contribution</td><td class="num pos" id="eqtTotal">—</td><td></td></tr></tfoot>
+  </table>
+</section>
+
+<section>
+  <h2>3. Patricia Industries (unlisted)</h2>
+  <table id="patriciaTable">
+    <thead><tr><th>Subsidiary</th><th>Description</th><th>Carrying value (SEK B)</th><th>Haircut %</th><th>SOTP value (SEK B)</th></tr></thead><tbody></tbody>
+    <tfoot><tr><td colspan="4">Total Patricia</td><td class="num pos" id="patriciaTotal">—</td></tr></tfoot>
+  </table>
+</section>
+
+<section>
+  <h2>4. Parent-level net debt</h2>
+  <table id="debtTable"><thead><tr><th>Item</th><th>Note</th><th>Value (SEK B)</th></tr></thead><tbody></tbody></table>
+</section>
+
+<section>
+  <h2>Share count, market price &amp; FX</h2>
+  <table>
+    <tr><td>Shares outstanding (M)</td><td><input type="number" id="shares" value="3060" step="1"></td><td class="mute">M (A + B combined)</td></tr>
+    <tr><td>Holdco discount (override)</td><td><input type="number" id="discount" value="8" step="1"></td><td class="mute">% (Base = 8%; Bear = 20%; Bull = 0%)</td></tr>
+    <tr><td>SEK / USD FX rate</td><td><input type="number" id="fx" value="10.50" step="0.01"></td><td class="mute">1 USD = X SEK</td></tr>
+    <tr><td>Current IVSXF (USD)</td><td><input type="number" id="marketPriceUSD" value="35.50" step="0.01"></td><td class="mute">USD</td></tr>
+  </table>
+</section>
+
+<div class="disclaimer"><b>Not investment advice.</b> Source: Investor AB Q1 2026 Interim Management Statement.</div>
+</main>
+
+<script type="module">
+
+// Listed core — Investor's stake % and the corresponding US ticker for live pricing.
+// We estimate underlying total market cap by: (US ADR price × ADR ratio × FX) × total native shares.
+// For simplicity, this workbook stores underlying market cap in SEK B directly — user edits as needed.
+// Default mkt caps are approximate Q1 2026 values in SEK billions.
+const listedCore = [
+  {name:"Atlas Copco",     ust:"ATLKY", pct:16.9, mktCap: 740 },
+  {name:"AstraZeneca",     ust:"AZN",   pct:3.7,  mktCap:2950 },
+  {name:"ABB",             ust:"ABBNY", pct:10.5, mktCap: 980 },
+  {name:"Wärtsilä",        ust:"WRTBF", pct:18.5, mktCap: 175 },
+  {name:"Ericsson",        ust:"ERIC",  pct:24.0, mktCap: 295 },
+  {name:"SEB",             ust:"SVKEF", pct:20.8, mktCap: 360 },
+  {name:"Nasdaq",          ust:"NDAQ",  pct:11.8, mktCap: 480 },
+  {name:"Saab",            ust:"SAABY", pct:30.0, mktCap: 200 },
+  {name:"Electrolux",      ust:"ELUXY", pct:16.6, mktCap:  35 },
+  {name:"Husqvarna",       ust:"HUSQY", pct:17.0, mktCap:  45 },
+  {name:"Sobi",            ust:"BIOVF", pct:35.6, mktCap: 110 },
+];
+const eqt = [
+  {name:"EQT (publicly listed)", tkr:"EQT.ST", value:80, note:"~10–15% stake by economic share"},
+];
+const patricia = [
+  {name:"Mölnlycke",          desc:"Wound care, surgical",        carry:60, haircut:5},
+  {name:"Piab",               desc:"Vacuum tech / automation",    carry:14, haircut:10},
+  {name:"Permobil",           desc:"Advanced wheelchairs",        carry:18, haircut:10},
+  {name:"Sarnova",            desc:"US healthcare distribution",  carry:13, haircut:10},
+  {name:"Vectura",            desc:"Real-estate operating",       carry:10, haircut:10},
+  {name:"BraunAbility",       desc:"Wheelchair-accessible vehicles", carry:6, haircut:15},
+  {name:"Advanced Instruments",desc:"Lab analytics",              carry:8, haircut:10},
+  {name:"Other Patricia + Investments AB", desc:"PE + Three (telecom JV)", carry:18, haircut:15},
+];
+const debtLines = [
+  {name:"Parent net debt", note:"Cash net of borrowings", value:-55},
+];
+
+const PRESETS = {
+  bear: { discount:20, patriciaBump:15 },
+  base: { discount:8,  patriciaBump:0  },
+  bull: { discount:0,  patriciaBump:-5 },
+};
+
+const fmt = n => n.toLocaleString("en-US",{maximumFractionDigits:1,minimumFractionDigits:1});
+const fmtSEK = n => "SEK " + fmt(n) + "B";
+const fmtSh = n => "SEK " + n.toLocaleString("en-US",{maximumFractionDigits:0});
+
+function build(){
+  const lt=document.querySelector("#listedTable tbody"); lt.innerHTML="";
+  listedCore.forEach((h,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><b>${h.name}</b></td><td>${h.ust}</td>
+      <td><input type="number" step="1" data-listed="${i}" data-f="mktCap" value="${h.mktCap}"></td>
+      <td><input type="number" step="0.1" data-listed="${i}" data-f="pct" value="${h.pct}"></td>
+      <td class="num pos" data-listedval="${i}"></td>`;
+    lt.appendChild(tr);
+  });
+  const et=document.querySelector("#eqtTable tbody"); et.innerHTML="";
+  eqt.forEach((e,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><b>${e.name}</b></td><td>${e.tkr}</td>
+      <td><input type="number" step="1" data-eqt="${i}" data-f="value" value="${e.value}"></td>
+      <td class="mute">${e.note}</td>`;
+    et.appendChild(tr);
+  });
+  const pt=document.querySelector("#patriciaTable tbody"); pt.innerHTML="";
+  patricia.forEach((p,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><b>${p.name}</b></td><td class="mute">${p.desc}</td>
+      <td><input type="number" step="1" data-pat="${i}" data-f="carry" value="${p.carry}"></td>
+      <td><input type="number" step="1" data-pat="${i}" data-f="haircut" value="${p.haircut}"></td>
+      <td class="num pos" data-patval="${i}"></td>`;
+    pt.appendChild(tr);
+  });
+  const dt=document.querySelector("#debtTable tbody"); dt.innerHTML="";
+  debtLines.forEach((d,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${d.name}</td><td class="mute">${d.note}</td>
+      <td><input type="number" step="1" data-debt="${i}" data-f="value" value="${d.value}"></td>`;
+    dt.appendChild(tr);
+  });
+}
+
+function recalc(){
+  let listedTotal=0;
+  listedCore.forEach((h,i)=>{
+    const v=h.mktCap*(h.pct/100);
+    listedTotal+=v;
+    document.querySelector(`[data-listedval="${i}"]`).textContent=fmtSEK(v);
+  });
+  document.getElementById("listedTotal").textContent=fmtSEK(listedTotal);
+
+  let eqtTotal=0;
+  eqt.forEach(e=>eqtTotal+=e.value);
+  document.getElementById("eqtTotal").textContent=fmtSEK(eqtTotal);
+
+  let patTotal=0;
+  patricia.forEach((p,i)=>{
+    const v=p.carry*(1-p.haircut/100);
+    patTotal+=v;
+    document.querySelector(`[data-patval="${i}"]`).textContent=fmtSEK(v);
+  });
+  document.getElementById("patriciaTotal").textContent=fmtSEK(patTotal);
+
+  let netDebt=0;
+  debtLines.forEach(d=>netDebt+=d.value);  // negative value = net cash; positive = net debt
+  // In SOTP we subtract debt, so subtract positive net debt (or add net cash)
+  document.getElementById("sumDebt").textContent=fmtSEK(netDebt<0?netDebt:-netDebt);
+
+  const gross = listedTotal + eqtTotal + patTotal - Math.max(0,netDebt) + Math.max(0,-netDebt);
+  // simpler: gross + (-netDebt). If netDebt is positive, subtract; if negative (cash), add.
+  const grossNAV = listedTotal + eqtTotal + patTotal + (-netDebt);
+  const disc = (parseFloat(document.getElementById("discount").value)||0)/100;
+  const sotp = grossNAV * (1-disc);
+  const shares = parseFloat(document.getElementById("shares").value)||1;
+  const perShare = (sotp*1000)/shares; // SEK B → SEK M, /M shares → SEK/share
+  const fx = parseFloat(document.getElementById("fx").value)||10;
+  const mktUSD = parseFloat(document.getElementById("marketPriceUSD").value)||0;
+  const mktSEK = mktUSD * fx;
+
+  document.getElementById("sumListed").textContent=fmtSEK(listedTotal);
+  document.getElementById("sumEQT").textContent=fmtSEK(eqtTotal);
+  document.getElementById("sumPatricia").textContent=fmtSEK(patTotal);
+  document.getElementById("sumNAV").textContent=fmtSEK(grossNAV);
+  document.getElementById("discFactor").textContent="×"+(1-disc).toFixed(2);
+  document.getElementById("sumPerShare").textContent=fmtSh(perShare);
+  document.getElementById("mktPriceUSD").textContent="$"+mktUSD.toFixed(2);
+}
+
+document.addEventListener("input", e=>{
+  const el=e.target;
+  if(el.dataset.listed!=null) listedCore[el.dataset.listed][el.dataset.f]=parseFloat(el.value)||0;
+  if(el.dataset.eqt!=null) eqt[el.dataset.eqt][el.dataset.f]=parseFloat(el.value)||0;
+  if(el.dataset.pat!=null) patricia[el.dataset.pat][el.dataset.f]=parseFloat(el.value)||0;
+  if(el.dataset.debt!=null) debtLines[el.dataset.debt][el.dataset.f]=parseFloat(el.value)||0;
+  recalc();
+});
+
+function applyPreset(k){
+  const p=PRESETS[k]; if(!p) return;
+  document.getElementById("discount").value=p.discount;
+  patricia.forEach(pat=>{ pat.haircut = Math.max(0, Math.min(80, pat.haircut + p.patriciaBump)); });
+  document.querySelectorAll('[data-pat][data-f="haircut"]').forEach((el,i)=>el.value=patricia[i].haircut);
+  recalc();
+}
+document.querySelectorAll(".preset").forEach(b=>b.addEventListener("click",()=>applyPreset(b.dataset.preset)));
+
+build(); recalc();
+
+import { priceMap as fetchPriceMap } from "/shared/prices.js";
+const stampEl=document.getElementById("priceStamp"), btn=document.getElementById("refreshBtn");
+async function refreshPrices(){
+  btn.disabled=true; const old=btn.textContent; btn.textContent="Fetching…";
+  try{
+    const {map,fetchedAt}=await fetchPriceMap(["IVSXF"],{force:true});
+    if(typeof map.IVSXF==="number") document.getElementById("marketPriceUSD").value=map.IVSXF.toFixed(2);
+    recalc();
+    const dt=new Date(fetchedAt);
+    stampEl.innerHTML=`<span class="live">● Live</span> · IVSXF refreshed @ ${dt.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"})}`;
+  }catch(e){ stampEl.innerHTML=`<span class="err">⚠ ${e.message}</span>`; }
+  finally{ btn.disabled=false; btn.textContent=old; }
+}
+btn.addEventListener("click",refreshPrices);
+refreshPrices();
+</script>
+</body>
+</html>

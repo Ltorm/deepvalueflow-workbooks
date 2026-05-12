@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boston Omaha (BOC) — SOTP Workbook · Deep Value Flow</title>
+<meta name="description" content="Live sum-of-the-parts for Boston Omaha — Buffett's grandnephew's young 'Berkshire-mini.' Billboards + surety insurance + broadband + private investments.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Boston Omaha SOTP — Live Workbook">
+<meta property="og:description" content="Boston Omaha (BOC): billboards + insurance + broadband + investments. Whitney Tilson pegs intrinsic ~$22-25.">
+<meta property="og:site_name" content="Deep Value Flow">
+<style>
+  :root{--bg:#0f1115;--panel:#161922;--line:#2a2f3a;--ink:#e6e8ee;--mute:#8a93a6;--pos:#3ecf8e;--neg:#ef6b6b;--warn:#e7b13d;--acc:#6ea8ff}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  header{padding:18px 24px;border-bottom:1px solid var(--line);background:var(--panel)}
+  h1{margin:0;font-size:18px} h2{margin:0 0 8px;font-size:14px;color:var(--acc);text-transform:uppercase;letter-spacing:.5px}
+  .sub{color:var(--mute);font-size:12px;margin-top:4px}
+  main{padding:18px 24px;max-width:1400px;margin:0 auto}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+  th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;font-size:12px}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--mute);font-weight:500;text-transform:uppercase;font-size:10px;letter-spacing:.4px}
+  tfoot td{border-top:1px solid var(--line);border-bottom:none;font-weight:600}
+  input[type=number]{width:100px;background:#0b0d12;border:1px solid var(--line);color:var(--ink);padding:3px 6px;border-radius:4px;text-align:right;font-variant-numeric:tabular-nums}
+  input[type=number]:focus{outline:1px solid var(--acc);border-color:var(--acc)}
+  .num{font-variant-numeric:tabular-nums} .mute{color:var(--mute)} .pos{color:var(--pos)} .neg{color:var(--neg)}
+  .pillrow{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 0}
+  .pill{background:#0b0d12;border:1px solid var(--line);border-radius:6px;padding:8px 12px;min-width:140px}
+  .pill .k{color:var(--mute);font-size:10px;text-transform:uppercase;letter-spacing:.4px}
+  .pill .v{font-size:16px;margin-top:2px;font-weight:600}
+  .disclaimer{font-size:11px;color:var(--mute);padding:8px 12px;background:#1a1208;border:1px solid #3a2a0a;border-radius:6px;margin-bottom:16px}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .btn{background:#0b0d12;border:1px solid var(--acc);color:var(--acc);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit}
+  .btn:hover{background:var(--acc);color:#0b0d12}
+  .stamp{font-size:11px;color:var(--mute)} .stamp .live{color:var(--pos)} .stamp .err{color:var(--neg)}
+  nav a{color:var(--mute);text-decoration:none;font-size:12px;margin-right:14px} nav a:hover{color:var(--acc)}
+</style>
+</head>
+<body>
+
+<header>
+  <nav><a href="/">← Deep Value Flow workbooks</a></nav>
+  <h1>Boston Omaha (BOC) — Sum-of-the-Parts Workbook</h1>
+  <div class="sub">Buffett's grandnephew Alex Rozek + Adam Peterson. "Young Berkshire" — billboards (Link Media) + surety insurance (General Indemnity) + broadband (AireBeam + UBB) + investments (BOAM, Sky Harbour stake).</div>
+  <div class="topbar">
+    <span class="stamp" id="priceStamp">Prices: loading…</span>
+    <button class="btn" id="refreshBtn" type="button">↻ Refresh prices</button>
+  </div>
+</header>
+
+<main>
+
+<div class="disclaimer">
+  <b>Methodology — segment EV/EBITDA + investments at market:</b>
+  (1) Billboards (Link Media) — outdoor industry EV/EBITDA mid-teens given good ROIC and contracted revenue.
+  (2) Surety insurance (General Indemnity) — P/BV plus float credit; combined ratio ~80% historically.
+  (3) Broadband (FibAire/AireBeam + UBB JV) — multiple per subscriber + EBITDA multiple of mature regions.
+  (4) Investments (BOAM = Boston Omaha Asset Mgmt) + Sky Harbour stake at market.
+  (5) Q1'26 results not yet released (May 14). <b>Defaults use Q1'25 segment data — refresh once filing drops.</b>
+</div>
+
+<section>
+  <h2>Valuation presets</h2>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn preset" data-preset="bear" type="button">Bear (low multiples)</button>
+    <button class="btn preset" data-preset="base" type="button" style="border-color:var(--pos);color:var(--pos)">Base (Tilson ~$22)</button>
+    <button class="btn preset" data-preset="bull" type="button">Bull (full quality re-rate)</button>
+  </div>
+</section>
+
+<section>
+  <h2>Live SOTP per share</h2>
+  <div class="pillrow">
+    <div class="pill"><div class="k">Operating segments</div><div class="v num" id="sumSeg">$0</div></div>
+    <div class="pill"><div class="k">+ Public/private investments</div><div class="v num" id="sumInv">$0</div></div>
+    <div class="pill"><div class="k">+ Cash &amp; equivalents</div><div class="v num" id="sumCash">$0</div></div>
+    <div class="pill"><div class="k">– Debt</div><div class="v num neg" id="sumDebt">$0</div></div>
+    <div class="pill" style="border-color:var(--acc)"><div class="k">Equity value</div><div class="v num pos" id="sumEquity">$0</div></div>
+    <div class="pill" style="border-color:var(--acc)"><div class="k">÷ Shares</div><div class="v num" id="sumShares">31M</div></div>
+    <div class="pill" style="border-color:var(--pos);background:#0b1f15"><div class="k">SOTP / share</div><div class="v num pos" id="sumPerShare">$0</div></div>
+    <div class="pill"><div class="k">BOC mkt price</div><div class="v num" id="mktPrice">$15</div></div>
+    <div class="pill"><div class="k">Tilson intrinsic (ref)</div><div class="v num">~$22</div></div>
+    <div class="pill"><div class="k">Book value</div><div class="v num">~$17</div></div>
+  </div>
+</section>
+
+<section>
+  <h2>1. Operating segments (TTM × multiple)</h2>
+  <table id="segTable">
+    <thead><tr><th>Segment</th><th>What it is</th><th>TTM EBITDA ($M)</th><th>Multiple</th><th>Implied EV ($M)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="4">Total segment EV</td><td class="num pos" id="segTotal">—</td></tr></tfoot>
+  </table>
+  <p class="mute" style="font-size:11px;margin-top:6px">Billboard comps: OUT/LAMR trade at 12-15x. Surety: P/BV in insurance is the right metric — handled in §2.</p>
+</section>
+
+<section>
+  <h2>2. Insurance equity (General Indemnity at P/BV)</h2>
+  <table id="insTable">
+    <thead><tr><th>Item</th><th>Note</th><th>Value ($M)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="2">Insurance segment value</td><td class="num pos" id="insTotal">—</td></tr></tfoot>
+  </table>
+</section>
+
+<section>
+  <h2>3. Investments (BOAM + Sky Harbour + other)</h2>
+  <table id="invTable">
+    <thead><tr><th>Investment</th><th>Ticker / type</th><th>Carrying value ($M)</th><th>Haircut %</th><th>SOTP value ($M)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="4">Total investments</td><td class="num pos" id="invTotal">—</td></tr></tfoot>
+  </table>
+</section>
+
+<section>
+  <h2>4. Cash &amp; debt</h2>
+  <table id="cashTable">
+    <thead><tr><th>Item</th><th>Note</th><th>Value ($M)</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Share count &amp; market</h2>
+  <table>
+    <tr><td>Shares outstanding (M)</td><td><input type="number" id="shares" value="31.0" step="0.1"></td><td class="mute">M</td></tr>
+    <tr><td>Current BOC price ($)</td><td><input type="number" id="marketPrice" value="15.00" step="0.01"></td><td class="mute">$</td></tr>
+  </table>
+</section>
+
+<div class="disclaimer"><b>Not investment advice.</b> Sources: Q1'25 10-Q (latest available); BOC investor presentations; Tilson research notes.</div>
+</main>
+
+<script type="module">
+
+// Operating segments — TTM EBITDA × multiple (billboard) ; broadband × EBITDA mult or per-sub
+// Note: Surety insurance treated in section 2 (P/BV) — kept out of EBITDA approach.
+const segments = [
+  {name:"Link Media (billboards)", desc:"Outdoor advertising, contracted revenue", ttm:25.0, mult:13},
+  {name:"AireBeam / UBB (broadband)", desc:"Rural fiber + fixed wireless", ttm:14.0, mult:8},
+  {name:"Other / corporate (run-off)", desc:"Corporate overhead, holdco G&A", ttm:-6.0, mult:8},
+];
+
+const insurance = [
+  {name:"General Indemnity (surety)",     note:"Combined ratio ~80%, GAAP book + float credit",  value:130},
+];
+
+const investments = [
+  {name:"Sky Harbour Group (SKYH) stake",  ust:"SKYH",                carry:80,  haircut:0  },
+  {name:"BOAM (Boston Omaha Asset Mgmt)",  ust:"Private fund",        carry:60,  haircut:20 },
+  {name:"24th Street Realty Holdings",     ust:"Private RE",          carry:20,  haircut:25 },
+  {name:"Other equity investments",         ust:"Misc.",               carry:30,  haircut:30 },
+];
+
+const cashLines = [
+  {name:"Cash & equivalents (parent)",    note:"~Q1'25 estimate",  value: 60},
+  {name:"Marketable securities",          note:"Listed equities",  value: 25},
+  {name:"Debt (broadband + holdco)",      note:"Mostly broadband network financing", value:-100},
+];
+
+const PRESETS = {
+  bear: { mults:[10, 6,  8], insBV:1.0, invBump:15 },
+  base: { mults:[13, 8,  8], insBV:1.2, invBump:0  },
+  bull: { mults:[15, 10, 8], insBV:1.5, invBump:-10 },
+};
+
+const fmtM = n => (n>=0?"$":"–$") + Math.abs(n).toLocaleString("en-US",{maximumFractionDigits:0}) + "M";
+const fmt$ = n => "$" + n.toLocaleString("en-US",{maximumFractionDigits:2,minimumFractionDigits:2});
+
+function build(){
+  const st=document.querySelector("#segTable tbody"); st.innerHTML="";
+  segments.forEach((s,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><b>${s.name}</b></td><td class="mute">${s.desc}</td>
+      <td><input type="number" step="0.5" data-seg="${i}" data-f="ttm" value="${s.ttm}"></td>
+      <td><input type="number" step="0.5" data-seg="${i}" data-f="mult" value="${s.mult}"></td>
+      <td class="num pos" data-segval="${i}"></td>`;
+    st.appendChild(tr);
+  });
+  const it=document.querySelector("#insTable tbody"); it.innerHTML="";
+  insurance.forEach((ins,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${ins.name}</td><td class="mute">${ins.note}</td>
+      <td><input type="number" step="5" data-ins="${i}" data-f="value" value="${ins.value}"></td>`;
+    it.appendChild(tr);
+  });
+  const vt=document.querySelector("#invTable tbody"); vt.innerHTML="";
+  investments.forEach((v,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><b>${v.name}</b></td><td class="mute">${v.ust}</td>
+      <td><input type="number" step="5" data-inv="${i}" data-f="carry" value="${v.carry}"></td>
+      <td><input type="number" step="1" data-inv="${i}" data-f="haircut" value="${v.haircut}"></td>
+      <td class="num pos" data-invval="${i}"></td>`;
+    vt.appendChild(tr);
+  });
+  const ct=document.querySelector("#cashTable tbody"); ct.innerHTML="";
+  cashLines.forEach((c,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${c.name}</td><td class="mute">${c.note}</td>
+      <td><input type="number" step="5" data-cash="${i}" data-f="value" value="${c.value}"></td>`;
+    ct.appendChild(tr);
+  });
+}
+
+function recalc(){
+  let segTotal=0;
+  segments.forEach((s,i)=>{
+    const v=s.ttm*s.mult;
+    segTotal+=v;
+    document.querySelector(`[data-segval="${i}"]`).textContent=fmtM(v);
+  });
+  document.getElementById("segTotal").textContent=fmtM(segTotal);
+
+  let insTotal=0;
+  insurance.forEach(i=>insTotal+=i.value);
+  document.getElementById("insTotal").textContent=fmtM(insTotal);
+
+  let invTotal=0;
+  investments.forEach((v,i)=>{
+    const val=v.carry*(1-v.haircut/100);
+    invTotal+=val;
+    document.querySelector(`[data-invval="${i}"]`).textContent=fmtM(val);
+  });
+  document.getElementById("invTotal").textContent=fmtM(invTotal);
+
+  let cashNet=0, debtTotal=0;
+  cashLines.forEach(c=>{
+    if(c.value<0) debtTotal += -c.value;
+    else cashNet += c.value;
+  });
+
+  const shares=parseFloat(document.getElementById("shares").value)||1;
+  const mktPx=parseFloat(document.getElementById("marketPrice").value)||0;
+  const equityVal = segTotal + insTotal + invTotal + cashNet - debtTotal;
+  const perShare = equityVal/shares;
+
+  document.getElementById("sumSeg").textContent=fmtM(segTotal+insTotal);
+  document.getElementById("sumInv").textContent=fmtM(invTotal);
+  document.getElementById("sumCash").textContent=fmtM(cashNet);
+  document.getElementById("sumDebt").textContent=fmtM(-debtTotal);
+  document.getElementById("sumEquity").textContent=fmtM(equityVal);
+  document.getElementById("sumShares").textContent=shares.toFixed(1)+"M";
+  document.getElementById("sumPerShare").textContent=fmt$(perShare);
+  document.getElementById("mktPrice").textContent=fmt$(mktPx);
+}
+
+document.addEventListener("input", e=>{
+  const el=e.target;
+  if(el.dataset.seg!=null) segments[el.dataset.seg][el.dataset.f]=parseFloat(el.value)||0;
+  if(el.dataset.ins!=null) insurance[el.dataset.ins][el.dataset.f]=parseFloat(el.value)||0;
+  if(el.dataset.inv!=null) investments[el.dataset.inv][el.dataset.f]=parseFloat(el.value)||0;
+  if(el.dataset.cash!=null) cashLines[el.dataset.cash][el.dataset.f]=parseFloat(el.value)||0;
+  recalc();
+});
+
+function applyPreset(k){
+  const p=PRESETS[k]; if(!p) return;
+  segments.forEach((s,i)=>s.mult=p.mults[i]);
+  insurance[0].value = insurance[0].value * p.insBV / 1.2; // adjust around base BV multiplier
+  investments.forEach(inv=>{ inv.haircut=Math.max(0,Math.min(80, inv.haircut + p.invBump)); });
+  document.querySelectorAll('[data-seg][data-f="mult"]').forEach((el,i)=>el.value=segments[i].mult);
+  document.querySelectorAll('[data-ins][data-f="value"]').forEach((el,i)=>el.value=insurance[i].value);
+  document.querySelectorAll('[data-inv][data-f="haircut"]').forEach((el,i)=>el.value=investments[i].haircut);
+  recalc();
+}
+document.querySelectorAll(".preset").forEach(b=>b.addEventListener("click",()=>applyPreset(b.dataset.preset)));
+
+build(); recalc();
+
+import { priceMap as fetchPriceMap } from "/shared/prices.js";
+const stampEl=document.getElementById("priceStamp"), btn=document.getElementById("refreshBtn");
+async function refreshPrices(){
+  btn.disabled=true; const old=btn.textContent; btn.textContent="Fetching…";
+  try{
+    const {map,fetchedAt}=await fetchPriceMap(["BOC","SKYH"],{force:true});
+    if(typeof map.BOC==="number") document.getElementById("marketPrice").value=map.BOC.toFixed(2);
+    recalc();
+    const dt=new Date(fetchedAt);
+    stampEl.innerHTML=`<span class="live">● Live</span> · BOC + SKYH refreshed @ ${dt.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"})}`;
+  }catch(e){ stampEl.innerHTML=`<span class="err">⚠ ${e.message}</span>`; }
+  finally{ btn.disabled=false; btn.textContent=old; }
+}
+btn.addEventListener("click",refreshPrices);
+refreshPrices();
+</script>
+</body>
+</html>
