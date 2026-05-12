@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fairfax Financial (FFH / FRFHF) — SOTP Workbook · Deep Value Flow</title>
+<meta name="description" content="Live sum-of-the-parts valuation for Fairfax Financial Holdings (Prem Watsa's 'Canadian Berkshire') — insurance underwriting, US + non-US equity portfolio, associates, debt.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Fairfax Financial SOTP — Live Workbook">
+<meta property="og:description" content="SOTP for FFH (Canadian Berkshire) with multi-region portfolio (US 13F + Eurobank + Fairfax India + private associates), float credit, Bear/Base/Bull presets.">
+<meta property="og:site_name" content="Deep Value Flow">
+<style>
+  :root{--bg:#0f1115;--panel:#161922;--line:#2a2f3a;--ink:#e6e8ee;--mute:#8a93a6;--pos:#3ecf8e;--neg:#ef6b6b;--warn:#e7b13d;--acc:#6ea8ff}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  header{padding:18px 24px;border-bottom:1px solid var(--line);background:var(--panel)}
+  h1{margin:0;font-size:18px} h2{margin:0 0 8px;font-size:14px;color:var(--acc);text-transform:uppercase;letter-spacing:.5px}
+  .sub{color:var(--mute);font-size:12px;margin-top:4px}
+  main{padding:18px 24px;max-width:1400px;margin:0 auto}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+  th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;font-size:12px}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--mute);font-weight:500;text-transform:uppercase;font-size:10px;letter-spacing:.4px}
+  tfoot td{border-top:1px solid var(--line);border-bottom:none;font-weight:600}
+  input[type=number]{width:90px;background:#0b0d12;border:1px solid var(--line);color:var(--ink);padding:3px 6px;border-radius:4px;text-align:right;font-variant-numeric:tabular-nums}
+  input[type=number]:focus{outline:1px solid var(--acc);border-color:var(--acc)}
+  .num{font-variant-numeric:tabular-nums} .mute{color:var(--mute)} .pos{color:var(--pos)} .neg{color:var(--neg)} .warn{color:var(--warn)}
+  .pillrow{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 0}
+  .pill{background:#0b0d12;border:1px solid var(--line);border-radius:6px;padding:8px 12px;min-width:140px}
+  .pill .k{color:var(--mute);font-size:10px;text-transform:uppercase;letter-spacing:.4px}
+  .pill .v{font-size:16px;margin-top:2px;font-weight:600}
+  details{margin-top:6px} summary{cursor:pointer;color:var(--mute);font-size:11px}
+  .disclaimer{font-size:11px;color:var(--mute);padding:8px 12px;background:#1a1208;border:1px solid #3a2a0a;border-radius:6px;margin-bottom:16px}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .btn{background:#0b0d12;border:1px solid var(--acc);color:var(--acc);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit}
+  .btn:hover{background:var(--acc);color:#0b0d12}
+  .stamp{font-size:11px;color:var(--mute)} .stamp .live{color:var(--pos)} .stamp .err{color:var(--neg)}
+  nav a{color:var(--mute);text-decoration:none;font-size:12px;margin-right:14px} nav a:hover{color:var(--acc)}
+</style>
+</head>
+<body>
+
+<header>
+  <nav><a href="/">← Deep Value Flow workbooks</a></nav>
+  <h1>Fairfax Financial Holdings (FFH.TO / FRFHF) — Sum-of-the-Parts Workbook</h1>
+  <div class="sub">Source data: Q1 2026 earnings release (April 30, 2026). All figures in USD. "Canadian Berkshire" run by Prem Watsa since 1985 — insurance + global investment portfolio + associates.</div>
+  <div class="topbar">
+    <span class="stamp" id="priceStamp">Prices: loading…</span>
+    <button class="btn" id="refreshBtn" type="button">↻ Refresh prices</button>
+  </div>
+</header>
+
+<main>
+
+<div class="disclaimer">
+  <b>Method &amp; caveats — Fairfax is structurally different from BRK/MKL:</b>
+  (1) <b>Reports in USD</b> despite TSX listing. Use FRFHF or convert FFH.TO from CAD.
+  (2) <b>US 13F is only ~$2.1B</b> — most of Fairfax's $40B+ investment portfolio is non-US-listed (Eurobank in Greece, Fairfax India in India, private associates). Modeled as separate non-US block.
+  (3) Major <b>private associates</b> include Recipe Unlimited, Quess, Atlas (Poseidon), Fairfax India, Stelco — these are equity-method investments, valued at carrying value × haircut.
+  (4) Q1 2026 underwriting profit $381.6M (CR 94.1%). Book value $1,250.14/share. ~22.4M diluted shares.
+</div>
+
+<section>
+  <h2>Valuation presets</h2>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn preset" data-preset="bear" type="button">Bear (conservative)</button>
+    <button class="btn preset" data-preset="base" type="button" style="border-color:var(--pos);color:var(--pos)">Base (mainstream)</button>
+    <button class="btn preset" data-preset="bull" type="button">Bull (full credit)</button>
+  </div>
+</section>
+
+<section>
+  <h2>Live SOTP per share</h2>
+  <div class="pillrow">
+    <div class="pill"><div class="k">US-listed equity</div><div class="v num" id="sumEq">$0</div></div>
+    <div class="pill"><div class="k">+ Non-US / private associates</div><div class="v num" id="sumNonUS">$0</div></div>
+    <div class="pill"><div class="k">+ Operating segments</div><div class="v num" id="sumSeg">$0</div></div>
+    <div class="pill"><div class="k">+ Cash + fixed income + float</div><div class="v num" id="sumCash">$0</div></div>
+    <div class="pill"><div class="k">– Debt</div><div class="v num neg" id="sumDebt">$0</div></div>
+    <div class="pill" style="border-color:var(--acc)"><div class="k">Implied equity value</div><div class="v num pos" id="sumEquity">$0</div></div>
+    <div class="pill" style="border-color:var(--acc)"><div class="k">÷ Shares</div><div class="v num" id="sumShares">22.4M</div></div>
+    <div class="pill" style="border-color:var(--pos);background:#0b1f15"><div class="k">SOTP / share</div><div class="v num pos" id="sumPerShare">$0</div></div>
+    <div class="pill"><div class="k">FRFHF mkt ($USD)</div><div class="v num" id="mktPrice">$2,300</div></div>
+    <div class="pill"><div class="k">Premium / (discount)</div><div class="v num" id="sumPrem">—</div></div>
+  </div>
+</section>
+
+<section>
+  <h2>1. US-listed equity portfolio (Q4 2025 13F · $2.08B)</h2>
+  <div style="margin-bottom:8px">
+    <span>Corporate tax rate: <input type="number" id="corpTaxRate" value="26" step="0.5" style="width:60px"> %</span>
+    <span style="margin-left:14px">Tax recognition: <input type="number" id="taxRecognition" value="25" step="5" style="width:60px"> %</span>
+  </div>
+  <table id="eqTable">
+    <thead><tr><th>Ticker</th><th>Company</th><th>Shares (M)</th><th>Price ($)</th><th>Mkt val ($M)</th><th>Cost / sh</th><th>Gain ($M)</th><th>Tax ($M)</th><th>After-tax ($M)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="4">Totals</td><td class="num" id="eqTotal">—</td><td></td><td class="num" id="eqGainTotal">—</td><td class="num neg" id="eqTaxTotal">—</td><td class="num pos" id="eqAfterTaxTotal">—</td></tr></tfoot>
+  </table>
+</section>
+
+<section>
+  <h2>2. Non-US listed + private associates (carrying value × haircut)</h2>
+  <table id="nonUSTable">
+    <thead><tr><th>Holding</th><th>Region / type</th><th>Carry value ($M)</th><th>Haircut %</th><th>SOTP value ($M)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="4">Total non-US / private</td><td class="num pos" id="nonUSTotal">—</td></tr></tfoot>
+  </table>
+  <details><summary>Why this is a separate section</summary><div class="mute" style="font-size:11px;padding:8px 0">
+    Fairfax has historically been &gt;50% non-US in its equity/associate book. These don't appear in 13F filings (which only require US-listed equity disclosure). Carrying values pulled from quarterly disclosures and most-recent annual letter. <b>Soft numbers</b> — refine from the 2025 Annual Report / Q1 2026 supplement.
+  </div></details>
+</section>
+
+<section>
+  <h2>3. Operating segments (Q1 2026 × P/E)</h2>
+  <table id="segTable">
+    <thead><tr><th>Segment</th><th>What it is</th><th>Q1'26 ($M)</th><th>Annualized ($M)</th><th>P/E</th><th>Value ($M)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="5">Total</td><td class="num pos" id="segTotal">—</td></tr></tfoot>
+  </table>
+</section>
+
+<section>
+  <h2>4. Cash, fixed income & float</h2>
+  <table id="cashTable">
+    <thead><tr><th>Line</th><th>Source</th><th>Carry ($B)</th><th>Haircut %</th><th>SOTP value ($B)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="4">Total</td><td class="num pos" id="cashTotal">—</td></tr></tfoot>
+  </table>
+</section>
+
+<section>
+  <h2>5. Debt</h2>
+  <table id="debtTable">
+    <thead><tr><th>Borrower</th><th>Type</th><th>Face ($M)</th><th>SOTP value ($M)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="2">Total</td><td class="num neg" id="debtFaceTotal">—</td><td class="num neg" id="debtEffTotal">—</td></tr></tfoot>
+  </table>
+</section>
+
+<section>
+  <h2>Share count &amp; market</h2>
+  <table>
+    <tr><td>Diluted shares (M)</td><td><input type="number" id="shares" value="22.4" step="0.1"></td><td class="mute">M</td></tr>
+    <tr><td>Current FRFHF price (USD)</td><td><input type="number" id="marketPrice" value="2300" step="1"></td><td class="mute">$</td></tr>
+    <tr><td>Book value per share (Mar'26)</td><td colspan="2" class="num mute">$1,250.14</td></tr>
+  </table>
+</section>
+
+<div class="disclaimer"><b>Not investment advice.</b> Sources: Fairfax Q1 2026 earnings release (Apr 30, 2026), Q4 2025 13F, fairfax.ca.</div>
+
+</main>
+
+<script type="module">
+
+// US 13F Q4 2025 — top 5 of 29 positions covered $1.47B (70.47%); tail rolls into "Other US".
+const equityHoldings = [
+  {tkr:"ORLA", name:"Orla Mining",                shares:35.0, price:9.50,  cost:5.00 },
+  {tkr:"OXY",  name:"Occidental Petroleum",       shares:5.0,  price:54.00, cost:55.00 },
+  {tkr:"CVS",  name:"CVS Health",                 shares:5.0,  price:75.00, cost:65.00 },
+  {tkr:"CLF",  name:"Cleveland-Cliffs",           shares:25.0, price:11.00, cost:13.00 },
+  {tkr:"BB",   name:"BlackBerry",                 shares:46.7, price:4.50,  cost:8.50 },
+  {tkr:"KW",   name:"Kennedy-Wilson",             shares:9.0,  price:10.50, cost:18.00 },
+  {tkr:"UAA",  name:"Under Armour",               shares:35.0, price:6.50,  cost:6.20 },
+];
+
+// Non-US + private associates — best-effort carrying values.
+const nonUS = [
+  {name:"Eurobank Ergasias (Greece)",        region:"~33% stake, EUREB.AT",       carry:3500, haircut:10},
+  {name:"Fairfax India Holdings",             region:"43% stake, FIH.U.TO",        carry:850,  haircut:15},
+  {name:"Recipe Unlimited",                   region:"Private CA restaurants",     carry:600,  haircut:30},
+  {name:"Quess Corp",                          region:"India staffing",             carry:400,  haircut:20},
+  {name:"Stelco (private)",                    region:"Canadian steel",             carry:500,  haircut:30},
+  {name:"Helios Fairfax Africa",               region:"Africa private equity",      carry:200,  haircut:40},
+  {name:"Atlas / Poseidon (private)",          region:"Container leasing",          carry:1100, haircut:20},
+  {name:"Other associates + non-US listed",    region:"Misc.",                       carry:2500, haircut:25},
+];
+
+// Q1 2026 P&C underwriting profit $381.6M; adj op income $1,213.4M includes investment yields.
+// We separate underwriting from investment yield (60% of yield treated as non-double-count = fixed income; 40% would be equity divs).
+const segments = [
+  {name:"P&C Underwriting",                  desc:"Allied World, Odyssey, Crum&Forster, Brit, Northbridge, Zenith",  qE:381.6,  mult:14},
+  {name:"Interest & dividend income (60%)",   desc:"~$5.0B/yr fixed-income + bond yield component",                  qE:750,    mult:6},
+  {name:"Share of profit of associates",     desc:"Equity-method earnings (not double-counted with §2 carry)",       qE:80,     mult:0},
+  {name:"Non-insurance subs (Recipe, etc.)",  desc:"Operating subsidiaries P&L",                                     qE:50,     mult:12},
+];
+
+const cashLines = [
+  {name:"Cash & short-term investments",  src:"Q1'26", carry:3.5,  haircut:0},
+  {name:"Fixed maturity securities",      src:"Q1'26", carry:36.0, haircut:5},
+  {name:"Insurance float (credit %)",     src:"~$35B", carry:35.0, haircut:50},
+];
+
+const debt = [
+  {name:"Senior notes — multi-currency",   type:"USD/CAD 3.5–5.5%",         face:5800},
+  {name:"Subsidiary debt",                  type:"Operating co level",       face:1500},
+];
+
+const PRESETS = {
+  bear: { mults:[12, 0,  0,  10], floatHaircut:100, taxRecog:100, nonUSHaircutBump:20 },
+  base: { mults:[14, 6,  0,  12], floatHaircut:50,  taxRecog:25,  nonUSHaircutBump:0  },
+  bull: { mults:[16, 12, 0,  15], floatHaircut:0,   taxRecog:0,   nonUSHaircutBump:-10 },
+};
+
+// ===== render =====
+const fmtM=n=>(n>=0?"$":"–$")+Math.abs(n).toLocaleString("en-US",{maximumFractionDigits:0})+"M";
+const fmt$=n=>"$"+n.toLocaleString("en-US",{maximumFractionDigits:2,minimumFractionDigits:2});
+
+function buildEquity(){
+  const tb=document.querySelector("#eqTable tbody"); tb.innerHTML="";
+  equityHoldings.forEach((h,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><b>${h.tkr}</b></td><td>${h.name}</td>
+      <td><input type="number" step="0.1" data-eq="${i}" data-f="shares" value="${h.shares}"></td>
+      <td><input type="number" step="0.01" data-eq="${i}" data-f="price"  value="${h.price}"></td>
+      <td class="num" data-eqval="${i}"></td>
+      <td><input type="number" step="0.01" data-eq="${i}" data-f="cost" value="${h.cost}"></td>
+      <td class="num" data-eqgain="${i}"></td>
+      <td class="num neg" data-eqtax="${i}"></td>
+      <td class="num pos" data-eqaftertax="${i}"></td>`;
+    tb.appendChild(tr);
+  });
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td><b>OTHER US</b></td><td>~22 smaller 13F positions</td>
+    <td colspan="2" class="mute" style="text-align:right">aggregate</td>
+    <td><input type="number" step="10" id="otherTail" value="600" style="width:90px"> M</td>
+    <td colspan="4" class="mute" style="text-align:left">← tie to $2.08B disclosed total</td>`;
+  tb.appendChild(tr);
+}
+function buildNonUS(){
+  const tb=document.querySelector("#nonUSTable tbody"); tb.innerHTML="";
+  nonUS.forEach((n,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${n.name}</td><td class="mute">${n.region}</td>
+      <td><input type="number" step="10" data-nonus="${i}" data-f="carry" value="${n.carry}"></td>
+      <td><input type="number" step="1" data-nonus="${i}" data-f="haircut" value="${n.haircut}"></td>
+      <td class="num" data-nonusval="${i}"></td>`;
+    tb.appendChild(tr);
+  });
+}
+function buildSegments(){
+  const tb=document.querySelector("#segTable tbody"); tb.innerHTML="";
+  segments.forEach((s,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><b>${s.name}</b></td><td class="mute">${s.desc}</td>
+      <td><input type="number" step="1" data-seg="${i}" data-f="qE" value="${s.qE}"></td>
+      <td class="num mute" data-segann="${i}"></td>
+      <td><input type="number" step="0.5" data-seg="${i}" data-f="mult" value="${s.mult}"></td>
+      <td class="num pos" data-segval="${i}"></td>`;
+    tb.appendChild(tr);
+  });
+}
+function buildCash(){
+  const tb=document.querySelector("#cashTable tbody"); tb.innerHTML="";
+  cashLines.forEach((c,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${c.name}</td><td class="mute">${c.src}</td>
+      <td><input type="number" step="0.1" data-cash="${i}" data-f="carry" value="${c.carry}"></td>
+      <td><input type="number" step="1" data-cash="${i}" data-f="haircut" value="${c.haircut}"></td>
+      <td class="num" data-cashval="${i}"></td>`;
+    tb.appendChild(tr);
+  });
+}
+function buildDebt(){
+  const tb=document.querySelector("#debtTable tbody"); tb.innerHTML="";
+  debt.forEach((d,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${d.name}</td><td class="mute">${d.type}</td>
+      <td><input type="number" step="50" data-debt="${i}" data-f="face" value="${d.face}"></td>
+      <td class="num neg" data-debteff="${i}"></td>`;
+    tb.appendChild(tr);
+  });
+}
+
+function recalc(){
+  const corpTax=(parseFloat(document.getElementById("corpTaxRate").value)||0)/100;
+  const taxRecog=(parseFloat(document.getElementById("taxRecognition").value)||0)/100;
+  let eqTotal=0,eqAfterTax=0,eqGainTot=0,eqTaxTot=0;
+  equityHoldings.forEach((h,i)=>{
+    const v=h.shares*h.price, basis=h.shares*h.cost, gain=v-basis;
+    const tax=Math.max(0,gain)*corpTax*taxRecog, after=v-tax;
+    eqTotal+=v; eqGainTot+=gain; eqTaxTot+=tax; eqAfterTax+=after;
+    document.querySelector(`[data-eqval="${i}"]`).textContent=fmtM(v);
+    const ge=document.querySelector(`[data-eqgain="${i}"]`);
+    ge.textContent=(gain>=0?"+":"")+fmtM(gain);
+    ge.className="num "+(gain>=0?"pos":"neg");
+    document.querySelector(`[data-eqtax="${i}"]`).textContent=fmtM(tax);
+    document.querySelector(`[data-eqaftertax="${i}"]`).textContent=fmtM(after);
+  });
+  const tail=parseFloat(document.getElementById("otherTail")?.value)||0;
+  eqTotal+=tail; eqAfterTax+=tail;
+  document.getElementById("eqTotal").textContent=fmtM(eqTotal);
+  document.getElementById("eqGainTotal").textContent=(eqGainTot>=0?"+":"")+fmtM(eqGainTot);
+  document.getElementById("eqTaxTotal").textContent=fmtM(eqTaxTot);
+  document.getElementById("eqAfterTaxTotal").textContent=fmtM(eqAfterTax);
+
+  let nonUSTotal=0;
+  nonUS.forEach((n,i)=>{
+    const v=n.carry*(1-n.haircut/100);
+    nonUSTotal+=v;
+    document.querySelector(`[data-nonusval="${i}"]`).textContent=fmtM(v);
+  });
+  document.getElementById("nonUSTotal").textContent=fmtM(nonUSTotal);
+
+  let segTotal=0;
+  segments.forEach((s,i)=>{
+    const ann=s.qE*4, v=ann*s.mult;
+    segTotal+=v;
+    document.querySelector(`[data-segann="${i}"]`).textContent=ann.toFixed(0);
+    document.querySelector(`[data-segval="${i}"]`).textContent=fmtM(v);
+  });
+  document.getElementById("segTotal").textContent=fmtM(segTotal);
+
+  let cashTotal=0;
+  cashLines.forEach((c,i)=>{
+    const v=c.carry*(1-c.haircut/100)*1000;
+    cashTotal+=v;
+    document.querySelector(`[data-cashval="${i}"]`).textContent=fmtM(v);
+  });
+  document.getElementById("cashTotal").textContent=fmtM(cashTotal);
+
+  let debtFace=0;
+  debt.forEach((d,i)=>{
+    debtFace+=d.face;
+    document.querySelector(`[data-debteff="${i}"]`).textContent=fmtM(d.face);
+  });
+  document.getElementById("debtFaceTotal").textContent=fmtM(debtFace);
+  document.getElementById("debtEffTotal").textContent=fmtM(debtFace);
+
+  const shares=parseFloat(document.getElementById("shares").value)||1;
+  document.getElementById("sumShares").textContent=shares.toFixed(2)+"M";
+  const mktPx=parseFloat(document.getElementById("marketPrice").value)||0;
+  const equityVal = eqAfterTax + nonUSTotal + segTotal + cashTotal - debtFace; // $M
+  const perShare = equityVal / shares;
+  document.getElementById("sumEq").textContent=fmtM(eqTotal);
+  document.getElementById("sumNonUS").textContent=fmtM(nonUSTotal);
+  document.getElementById("sumSeg").textContent=fmtM(segTotal);
+  document.getElementById("sumCash").textContent=fmtM(cashTotal);
+  document.getElementById("sumDebt").textContent=fmtM(-debtFace);
+  document.getElementById("sumEquity").textContent=fmtM(equityVal);
+  document.getElementById("sumPerShare").textContent=fmt$(perShare);
+  document.getElementById("mktPrice").textContent=fmt$(mktPx);
+  const prem=(perShare-mktPx)/mktPx;
+  const pe=document.getElementById("sumPrem");
+  pe.textContent=(prem>=0?"+":"")+(prem*100).toFixed(1)+"%";
+  pe.className="v num "+(prem>=0?"pos":"neg");
+}
+
+document.addEventListener("input", e=>{
+  const el=e.target;
+  if(el.dataset.eq!=null) equityHoldings[el.dataset.eq][el.dataset.f]=parseFloat(el.value)||0;
+  if(el.dataset.nonus!=null) nonUS[el.dataset.nonus][el.dataset.f]=parseFloat(el.value)||0;
+  if(el.dataset.seg!=null) segments[el.dataset.seg][el.dataset.f]=parseFloat(el.value)||0;
+  if(el.dataset.cash!=null) cashLines[el.dataset.cash][el.dataset.f]=parseFloat(el.value)||0;
+  if(el.dataset.debt!=null) debt[el.dataset.debt][el.dataset.f]=parseFloat(el.value)||0;
+  recalc();
+});
+
+function applyPreset(k){
+  const p=PRESETS[k]; if(!p) return;
+  segments.forEach((s,i)=>s.mult=p.mults[i]);
+  cashLines.forEach(c=>{ if(c.name.startsWith("Insurance float")) c.haircut=p.floatHaircut; });
+  // Apply nonUS haircut bump (clamp 0–80)
+  nonUS.forEach(n=>{ n.haircut = Math.max(0, Math.min(80, n.haircut + p.nonUSHaircutBump - 0)); });
+  document.getElementById("taxRecognition").value=p.taxRecog;
+  document.querySelectorAll('[data-seg][data-f="mult"]').forEach((el,i)=>el.value=segments[i].mult);
+  document.querySelectorAll('[data-cash][data-f="haircut"]').forEach((el,i)=>el.value=cashLines[i].haircut);
+  document.querySelectorAll('[data-nonus][data-f="haircut"]').forEach((el,i)=>el.value=nonUS[i].haircut);
+  recalc();
+}
+document.querySelectorAll(".preset").forEach(b=>b.addEventListener("click",()=>applyPreset(b.dataset.preset)));
+
+buildEquity(); buildNonUS(); buildSegments(); buildCash(); buildDebt(); recalc();
+
+import { priceMap as fetchPriceMap } from "/shared/prices.js";
+const LIVE_TICKERS=["FRFHF","FFH.TO", ...equityHoldings.map(h=>h.tkr)];
+const stampEl=document.getElementById("priceStamp"), btn=document.getElementById("refreshBtn");
+async function refreshPrices({force=false}={}){
+  btn.disabled=true; const old=btn.textContent; btn.textContent="Fetching…";
+  try{
+    const {map,fetchedAt,fromCache}=await fetchPriceMap(LIVE_TICKERS,{force});
+    let u=0;
+    equityHoldings.forEach(h=>{ if(typeof map[h.tkr]==="number"){ h.price=map[h.tkr]; u++; }});
+    if(typeof map.FRFHF==="number") document.getElementById("marketPrice").value=map.FRFHF.toFixed(2);
+    document.querySelectorAll('[data-eq][data-f="price"]').forEach((el,i)=>el.value=equityHoldings[i].price.toFixed(2));
+    recalc();
+    const dt=new Date(fetchedAt);
+    stampEl.innerHTML=`<span class="live">● Live</span> · ${u} prices updated · ${fromCache?"cached":"fresh"} @ ${dt.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"})}`;
+  }catch(e){ stampEl.innerHTML=`<span class="err">⚠ ${e.message}</span>`; console.error(e); }
+  finally{ btn.disabled=false; btn.textContent=old; }
+}
+btn.addEventListener("click",()=>refreshPrices({force:true}));
+refreshPrices();
+setInterval(()=>{if(!document.hidden) refreshPrices();},5*60*1000);
+</script>
+</body>
+</html>

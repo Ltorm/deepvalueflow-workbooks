@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Markel Group (MKL) — SOTP Workbook · Deep Value Flow</title>
+<meta name="description" content="Live sum-of-the-parts valuation for Markel Group — insurance underwriting, $11.9B equity portfolio (Gayner), Markel Ventures operating segments.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Markel Group SOTP — Live Workbook">
+<meta property="og:description" content="SOTP for MKL (Baby Berkshire) with auto-updating prices, editable segment P/E multiples, Bear/Base/Bull presets, and float credit.">
+<meta property="og:site_name" content="Deep Value Flow">
+<meta name="twitter:card" content="summary">
+<style>
+  :root{--bg:#0f1115;--panel:#161922;--line:#2a2f3a;--ink:#e6e8ee;--mute:#8a93a6;--pos:#3ecf8e;--neg:#ef6b6b;--warn:#e7b13d;--acc:#6ea8ff}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  header{padding:18px 24px;border-bottom:1px solid var(--line);background:var(--panel)}
+  h1{margin:0;font-size:18px} h2{margin:0 0 8px;font-size:14px;color:var(--acc);text-transform:uppercase;letter-spacing:.5px}
+  .sub{color:var(--mute);font-size:12px;margin-top:4px}
+  main{padding:18px 24px;max-width:1400px;margin:0 auto}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+  th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;font-size:12px}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--mute);font-weight:500;text-transform:uppercase;font-size:10px;letter-spacing:.4px}
+  tfoot td{border-top:1px solid var(--line);border-bottom:none;font-weight:600}
+  input[type=number]{width:90px;background:#0b0d12;border:1px solid var(--line);color:var(--ink);padding:3px 6px;border-radius:4px;text-align:right;font-variant-numeric:tabular-nums}
+  input[type=number]:focus{outline:1px solid var(--acc);border-color:var(--acc)}
+  .num{font-variant-numeric:tabular-nums} .mute{color:var(--mute)} .pos{color:var(--pos)} .neg{color:var(--neg)} .warn{color:var(--warn)}
+  .pillrow{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 0}
+  .pill{background:#0b0d12;border:1px solid var(--line);border-radius:6px;padding:8px 12px;min-width:140px}
+  .pill .k{color:var(--mute);font-size:10px;text-transform:uppercase;letter-spacing:.4px}
+  .pill .v{font-size:16px;margin-top:2px;font-weight:600}
+  details{margin-top:6px} summary{cursor:pointer;color:var(--mute);font-size:11px}
+  .disclaimer{font-size:11px;color:var(--mute);padding:8px 12px;background:#1a1208;border:1px solid #3a2a0a;border-radius:6px;margin-bottom:16px}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .btn{background:#0b0d12;border:1px solid var(--acc);color:var(--acc);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit}
+  .btn:hover{background:var(--acc);color:#0b0d12}
+  .stamp{font-size:11px;color:var(--mute)} .stamp .live{color:var(--pos)} .stamp .err{color:var(--neg)}
+  nav a{color:var(--mute);text-decoration:none;font-size:12px;margin-right:14px} nav a:hover{color:var(--acc)}
+</style>
+</head>
+<body>
+
+<header>
+  <nav><a href="/">← Deep Value Flow workbooks</a></nav>
+  <h1>Markel Group (MKL) — Sum-of-the-Parts Workbook</h1>
+  <div class="sub">Source data: Q1 2026 10-Q (April 2026 release) and Q1 2026 13F (filed May 1, 2026). "Baby Berkshire" — insurance + investments + Markel Ventures operating companies.</div>
+  <div class="topbar">
+    <span class="stamp" id="priceStamp">Prices: loading…</span>
+    <button class="btn" id="refreshBtn" type="button">↻ Refresh prices</button>
+  </div>
+</header>
+
+<main>
+
+<div class="disclaimer">
+  <b>Method &amp; caveats:</b>
+  (1) Operating segments valued via after-tax earnings × P/E multiple.
+  (2) Insurance investment income partially credited (60% non-overlap with §1 listed equities — bond yield).
+  (3) Float credited per chosen preset (smaller than BRK at ~$26B).
+  (4) Q1 2026 13F shows Gayner did massive trimming — share counts below reflect post-trim positions.
+  (5) Markel Ventures is now reported across "Industrial" / "Financial" / "Consumer & Other" segments rather than one line.
+</div>
+
+<section>
+  <h2>Valuation presets</h2>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+    <button class="btn preset" data-preset="bear" type="button">Bear (conservative)</button>
+    <button class="btn preset" data-preset="base" type="button" style="border-color:var(--pos);color:var(--pos)">Base (mainstream consensus)</button>
+    <button class="btn preset" data-preset="bull" type="button">Bull (quality-comp)</button>
+  </div>
+</section>
+
+<section>
+  <h2>Live SOTP per share</h2>
+  <div class="pillrow">
+    <div class="pill"><div class="k">Equity portfolio (after-tax)</div><div class="v num" id="sumEq">$0</div></div>
+    <div class="pill"><div class="k">+ Operating segments</div><div class="v num" id="sumSeg">$0</div></div>
+    <div class="pill"><div class="k">+ Cash &amp; fixed income + float credit</div><div class="v num" id="sumCash">$0</div></div>
+    <div class="pill"><div class="k">– Corp. deferred tax</div><div class="v num neg" id="sumCorpTax">$0</div></div>
+    <div class="pill"><div class="k">– Debt</div><div class="v num neg" id="sumDebt">$0</div></div>
+    <div class="pill" style="border-color:var(--acc)"><div class="k">Implied equity value</div><div class="v num pos" id="sumEquity">$0</div></div>
+    <div class="pill" style="border-color:var(--acc)"><div class="k">÷ Shares</div><div class="v num" id="sumShares">12.8M</div></div>
+    <div class="pill" style="border-color:var(--pos);background:#0b1f15"><div class="k">SOTP / share</div><div class="v num pos" id="sumPerShare">$0</div></div>
+    <div class="pill"><div class="k">MKL mkt price</div><div class="v num" id="mktPrice">$1,800</div></div>
+    <div class="pill"><div class="k">Premium / (discount)</div><div class="v num" id="sumPrem">—</div></div>
+  </div>
+</section>
+
+<section>
+  <h2>1. Public equity portfolio (Q1 2026 13F, post-trim)</h2>
+  <div style="margin-bottom:8px">
+    <span>Corporate tax rate: <input type="number" id="corpTaxRate" value="26" step="0.5" style="width:60px"> %</span>
+    <span style="margin-left:14px">Deferred-tax recognition: <input type="number" id="taxRecognition" value="25" step="5" style="width:60px"> %</span>
+  </div>
+  <table id="eqTable">
+    <thead><tr><th>Ticker</th><th>Company</th><th>Shares (M)</th><th>Price ($)</th><th>Mkt val ($M)</th><th>Cost / sh ($)</th><th>Gain ($M)</th><th>Tax ($M)</th><th>After-tax ($M)</th><th>% port</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="4">Totals</td><td class="num" id="eqTotal">—</td><td></td><td class="num" id="eqGainTotal">—</td><td class="num neg" id="eqTaxTotal">—</td><td class="num pos" id="eqAfterTaxTotal">—</td><td></td></tr></tfoot>
+  </table>
+  <details><summary>Notes</summary><div class="mute" style="font-size:11px;padding:8px 0">"Other 13F holdings" plug captures the ~125 smaller positions to tie to the disclosed $11.94B portfolio total.</div></details>
+</section>
+
+<section>
+  <h2>2. Operating segments (Q1 2026 adj. op income × P/E)</h2>
+  <table id="segTable">
+    <thead><tr><th>Segment</th><th>What it is</th><th>Q1'26 op inc ($M)</th><th>Annualized ($M)</th><th>P/E</th><th>Value ($M)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="5">Total operating segments</td><td class="num pos" id="segTotal">—</td></tr></tfoot>
+  </table>
+</section>
+
+<section>
+  <h2>3. Cash, fixed income & float</h2>
+  <table id="cashTable">
+    <thead><tr><th>Line</th><th>Source</th><th>Carry ($B)</th><th>Haircut %</th><th>SOTP value ($B)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="4">Total</td><td class="num pos" id="cashTotal">—</td></tr></tfoot>
+  </table>
+</section>
+
+<section>
+  <h2>4. Debt</h2>
+  <table id="debtTable">
+    <thead><tr><th>Borrower</th><th>Type</th><th>Face ($M)</th><th>SOTP value ($M)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="2">Total</td><td class="num neg" id="debtFaceTotal">—</td><td class="num neg" id="debtEffTotal">—</td></tr></tfoot>
+  </table>
+</section>
+
+<section>
+  <h2>Share count &amp; market</h2>
+  <table>
+    <tr><td>Shares outstanding (M)</td><td><input type="number" id="shares" value="12.8" step="0.1"></td><td class="mute">M</td></tr>
+    <tr><td>Current MKL price ($)</td><td><input type="number" id="marketPrice" value="1800" step="1"></td><td class="mute">$</td></tr>
+    <tr><td>Book value per share (Q1'26)</td><td colspan="2" class="num mute">~$1,200</td></tr>
+  </table>
+</section>
+
+<div class="disclaimer"><b>Not investment advice.</b> Sources: Q1 2026 10-Q, Q1 2026 13F (May 1 2026 filing).</div>
+
+</main>
+
+<script type="module">
+
+// 13F Q1 2026 — post-trim positions. Tail of ~125 names rolled into "Other".
+const equityHoldings = [
+  {tkr:"BRK-B",  name:"Berkshire Hathaway",          shares:0.428, price:500.00, cost:280.00 },
+  {tkr:"GOOGL",  name:"Alphabet (Class A)",          shares:0.297, price:195.00, cost:80.00  },
+  {tkr:"BN",     name:"Brookfield Corp",             shares:4.76,  price:65.00,  cost:35.00  },
+  {tkr:"DE",     name:"Deere & Co.",                 shares:0.55,  price:480.00, cost:350.00 },
+  {tkr:"AMZN",  name:"Amazon",                       shares:1.00,  price:220.00, cost:130.00 },
+  {tkr:"HD",     name:"Home Depot",                  shares:0.277, price:400.00, cost:280.00 },
+  {tkr:"WFC",    name:"Wells Fargo",                 shares:6.0,   price:78.00,  cost:48.00  },
+  {tkr:"JPM",    name:"JPMorgan Chase",              shares:1.5,   price:240.00, cost:160.00 },
+  {tkr:"V",      name:"Visa",                        shares:1.0,   price:295.00, cost:200.00 },
+  {tkr:"MA",     name:"Mastercard",                  shares:0.4,   price:540.00, cost:380.00 },
+];
+
+// Q1 2026 adj op income $498M total. Allocate by segment (estimates):
+const segments = [
+  {name:"Markel Insurance",        desc:"Specialty P&C + reinsurance, 93% combined ratio",  qE:240, mult:14},
+  {name:"Investments (yield)",     desc:"~60% bond/T-bill yield (40% would double-count §1)", qE:80,  mult:6},
+  {name:"Industrial (Ventures)",   desc:"Building products, ag, transport equipment",       qE:120, mult:12},
+  {name:"Financial",                desc:"Program svcs, asset mgmt (Velocity, Nephila)",     qE:36,  mult:14},
+  {name:"Consumer & Other",         desc:"Leather goods, fashion, etc.",                     qE:22,  mult:11},
+];
+
+const cashLines = [
+  {name:"Cash & short-term investments",  src:"Q1'26 10-Q", carry:5.5,  haircut:0},
+  {name:"Fixed maturity securities",      src:"Q1'26 10-Q", carry:14.0, haircut:5},
+  {name:"Insurance float (credit %)",     src:"~$26B",      carry:26.0, haircut:50},
+];
+
+const debt = [
+  {name:"Senior notes (multi-tranche)",  type:"Various 3.50–5.00% snr unsecured",  face:4500},
+];
+
+const PRESETS = {
+  bear: { mults:[12, 0,  10, 12, 9],  floatHaircut:100, taxRecog:100 },
+  base: { mults:[14, 6,  12, 14, 11], floatHaircut:50,  taxRecog:25  },
+  bull: { mults:[16, 12, 15, 16, 13], floatHaircut:0,   taxRecog:0   },
+};
+
+// ===== render =====
+const fmtM = n => (n>=0?"$":"–$") + Math.abs(n).toLocaleString("en-US",{maximumFractionDigits:0}) + "M";
+const fmtB = n => (n>=0?"$":"–$") + Math.abs(n).toLocaleString("en-US",{maximumFractionDigits:1,minimumFractionDigits:1}) + "B";
+const fmt$ = n => "$" + n.toLocaleString("en-US",{maximumFractionDigits:2,minimumFractionDigits:2});
+const pct = n => (n*100).toLocaleString("en-US",{maximumFractionDigits:1}) + "%";
+
+function buildEquity(){
+  const tb=document.querySelector("#eqTable tbody"); tb.innerHTML="";
+  equityHoldings.forEach((h,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><b>${h.tkr}</b></td><td>${h.name}</td>
+      <td><input type="number" step="0.001" data-eq="${i}" data-f="shares" value="${h.shares}"></td>
+      <td><input type="number" step="0.01" data-eq="${i}" data-f="price"  value="${h.price}"></td>
+      <td class="num" data-eqval="${i}"></td>
+      <td><input type="number" step="0.01" data-eq="${i}" data-f="cost"   value="${h.cost}"></td>
+      <td class="num" data-eqgain="${i}"></td>
+      <td class="num neg" data-eqtax="${i}"></td>
+      <td class="num pos" data-eqaftertax="${i}"></td>
+      <td class="num mute" data-eqpct="${i}"></td>`;
+    tb.appendChild(tr);
+  });
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td><b>OTHER</b></td><td>~120 smaller 13F positions</td>
+    <td colspan="2" class="mute" style="text-align:right">aggregate</td>
+    <td><input type="number" step="50" id="otherTail" value="6500" style="width:90px"> M</td>
+    <td colspan="5" class="mute" style="text-align:left">← edit to tie to $11.94B disclosed total</td>`;
+  tb.appendChild(tr);
+}
+function buildSegments(){
+  const tb=document.querySelector("#segTable tbody"); tb.innerHTML="";
+  segments.forEach((s,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><b>${s.name}</b></td><td class="mute">${s.desc}</td>
+      <td><input type="number" step="1" data-seg="${i}" data-f="qE" value="${s.qE}"></td>
+      <td class="num mute" data-segann="${i}"></td>
+      <td><input type="number" step="0.5" data-seg="${i}" data-f="mult" value="${s.mult}"></td>
+      <td class="num pos" data-segval="${i}"></td>`;
+    tb.appendChild(tr);
+  });
+}
+function buildCash(){
+  const tb=document.querySelector("#cashTable tbody"); tb.innerHTML="";
+  cashLines.forEach((c,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${c.name}</td><td class="mute">${c.src}</td>
+      <td><input type="number" step="0.1" data-cash="${i}" data-f="carry" value="${c.carry}"></td>
+      <td><input type="number" step="1" data-cash="${i}" data-f="haircut" value="${c.haircut}"></td>
+      <td class="num" data-cashval="${i}"></td>`;
+    tb.appendChild(tr);
+  });
+}
+function buildDebt(){
+  const tb=document.querySelector("#debtTable tbody"); tb.innerHTML="";
+  debt.forEach((d,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${d.name}</td><td class="mute">${d.type}</td>
+      <td><input type="number" step="50" data-debt="${i}" data-f="face" value="${d.face}"></td>
+      <td class="num neg" data-debteff="${i}"></td>`;
+    tb.appendChild(tr);
+  });
+}
+
+function recalc(){
+  const corpTax=(parseFloat(document.getElementById("corpTaxRate").value)||0)/100;
+  const taxRecog=(parseFloat(document.getElementById("taxRecognition").value)||0)/100;
+  let eqTotal=0,eqAfterTax=0,eqGainTot=0,eqTaxTot=0;
+  equityHoldings.forEach(h=>eqTotal+=h.shares*h.price);
+  equityHoldings.forEach((h,i)=>{
+    const v=h.shares*h.price, basis=h.shares*h.cost, gain=v-basis;
+    const tax=Math.max(0,gain)*corpTax*taxRecog, after=v-tax;
+    eqGainTot+=gain; eqTaxTot+=tax; eqAfterTax+=after;
+    document.querySelector(`[data-eqval="${i}"]`).textContent=fmtM(v);
+    const ge=document.querySelector(`[data-eqgain="${i}"]`);
+    ge.textContent=(gain>=0?"+":"")+fmtM(gain);
+    ge.className="num "+(gain>=0?"pos":"neg");
+    document.querySelector(`[data-eqtax="${i}"]`).textContent=fmtM(tax);
+    document.querySelector(`[data-eqaftertax="${i}"]`).textContent=fmtM(after);
+    document.querySelector(`[data-eqpct="${i}"]`).textContent=pct(v/eqTotal);
+  });
+  const tail=parseFloat(document.getElementById("otherTail")?.value)||0;
+  eqTotal+=tail; eqAfterTax+=tail;
+  document.getElementById("eqTotal").textContent=fmtM(eqTotal);
+  document.getElementById("eqGainTotal").textContent=(eqGainTot>=0?"+":"")+fmtM(eqGainTot);
+  document.getElementById("eqTaxTotal").textContent=fmtM(eqTaxTot);
+  document.getElementById("eqAfterTaxTotal").textContent=fmtM(eqAfterTax);
+
+  let segTotal=0;
+  segments.forEach((s,i)=>{
+    const ann=s.qE*4, v=ann*s.mult;
+    segTotal+=v;
+    document.querySelector(`[data-segann="${i}"]`).textContent=ann.toFixed(0);
+    document.querySelector(`[data-segval="${i}"]`).textContent=fmtM(v);
+  });
+  document.getElementById("segTotal").textContent=fmtM(segTotal);
+
+  let cashTotal=0;
+  cashLines.forEach((c,i)=>{
+    const v=c.carry*(1-c.haircut/100)*1000;
+    cashTotal+=v;
+    document.querySelector(`[data-cashval="${i}"]`).textContent=fmtM(v);
+  });
+  document.getElementById("cashTotal").textContent=fmtM(cashTotal);
+
+  let debtFace=0;
+  debt.forEach((d,i)=>{
+    debtFace+=d.face;
+    document.querySelector(`[data-debteff="${i}"]`).textContent=fmtM(d.face);
+  });
+  document.getElementById("debtFaceTotal").textContent=fmtM(debtFace);
+  document.getElementById("debtEffTotal").textContent=fmtM(debtFace);
+
+  const shares=parseFloat(document.getElementById("shares").value)||1;
+  document.getElementById("sumShares").textContent=shares.toFixed(2)+"M";
+  const mktPx=parseFloat(document.getElementById("marketPrice").value)||0;
+  const equityVal = eqAfterTax + segTotal + cashTotal - debtFace; // all in $M
+  const perShare = equityVal / shares;
+  document.getElementById("sumEq").textContent=fmtM(eqTotal);
+  document.getElementById("sumSeg").textContent=fmtM(segTotal);
+  document.getElementById("sumCash").textContent=fmtM(cashTotal);
+  document.getElementById("sumCorpTax").textContent=fmtM(-eqTaxTot);
+  document.getElementById("sumDebt").textContent=fmtM(-debtFace);
+  document.getElementById("sumEquity").textContent=fmtM(equityVal);
+  document.getElementById("sumPerShare").textContent=fmt$(perShare);
+  document.getElementById("mktPrice").textContent=fmt$(mktPx);
+  const prem=(perShare-mktPx)/mktPx;
+  const pe=document.getElementById("sumPrem");
+  pe.textContent=(prem>=0?"+":"")+(prem*100).toFixed(1)+"%";
+  pe.className="v num "+(prem>=0?"pos":"neg");
+}
+
+document.addEventListener("input", e=>{
+  const el=e.target;
+  if(el.dataset.eq!=null) equityHoldings[el.dataset.eq][el.dataset.f]=parseFloat(el.value)||0;
+  if(el.dataset.seg!=null) segments[el.dataset.seg][el.dataset.f]=parseFloat(el.value)||0;
+  if(el.dataset.cash!=null) cashLines[el.dataset.cash][el.dataset.f]=parseFloat(el.value)||0;
+  if(el.dataset.debt!=null) debt[el.dataset.debt][el.dataset.f]=parseFloat(el.value)||0;
+  recalc();
+});
+
+function applyPreset(k){
+  const p=PRESETS[k]; if(!p) return;
+  segments.forEach((s,i)=>s.mult=p.mults[i]);
+  cashLines.forEach(c=>{ if(c.name.startsWith("Insurance float")) c.haircut=p.floatHaircut; });
+  document.getElementById("taxRecognition").value=p.taxRecog;
+  document.querySelectorAll('[data-seg][data-f="mult"]').forEach((el,i)=>el.value=segments[i].mult);
+  document.querySelectorAll('[data-cash][data-f="haircut"]').forEach((el,i)=>el.value=cashLines[i].haircut);
+  recalc();
+}
+document.querySelectorAll(".preset").forEach(b=>b.addEventListener("click",()=>applyPreset(b.dataset.preset)));
+
+buildEquity(); buildSegments(); buildCash(); buildDebt(); recalc();
+
+import { priceMap as fetchPriceMap } from "/shared/prices.js";
+const LIVE_TICKERS = ["MKL", ...equityHoldings.map(h=>h.tkr)];
+const stampEl=document.getElementById("priceStamp"), btn=document.getElementById("refreshBtn");
+async function refreshPrices({force=false}={}){
+  btn.disabled=true; const old=btn.textContent; btn.textContent="Fetching…";
+  try{
+    const {map,fetchedAt,fromCache}=await fetchPriceMap(LIVE_TICKERS,{force});
+    let u=0;
+    equityHoldings.forEach(h=>{ if(typeof map[h.tkr]==="number"){ h.price=map[h.tkr]; u++; }});
+    if(typeof map.MKL==="number") document.getElementById("marketPrice").value=map.MKL.toFixed(2);
+    document.querySelectorAll('[data-eq][data-f="price"]').forEach((el,i)=>el.value=equityHoldings[i].price.toFixed(2));
+    recalc();
+    const dt=new Date(fetchedAt);
+    stampEl.innerHTML=`<span class="live">● Live</span> · ${u} prices updated · ${fromCache?"cached":"fresh"} @ ${dt.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"})}`;
+  }catch(e){ stampEl.innerHTML=`<span class="err">⚠ ${e.message}</span>`; console.error(e); }
+  finally{ btn.disabled=false; btn.textContent=old; }
+}
+btn.addEventListener("click",()=>refreshPrices({force:true}));
+refreshPrices();
+setInterval(()=>{if(!document.hidden) refreshPrices();},5*60*1000);
+</script>
+</body>
+</html>
