@@ -72,11 +72,29 @@
 <div class="disclaimer">
   <b>Method &amp; caveats:</b>
   (1) Operating segments valued via <b>after-tax earnings × P/E multiple</b>, not revenue (Berkshire's businesses have stable margins so earnings multiples are more meaningful than revenue multiples).
-  (2) <b>Insurance investment income is intentionally excluded from segment valuation</b> — it's the yield on the public equity portfolio already captured at market in section 1. Including it as a multiplied segment double-counts the equities.
-  (3) Insurance <b>float</b> (~$170B) is shown informationally — it supports the investment portfolio but isn't subtracted as a liability because policyholder claims are funded by the assets it backs.
+  (2) <b>Insurance investment income</b> gets partial credit — its fixed-income/T-bill yield component (~60%) is not a double-count of §1, but its equity-dividend portion is. Base case applies a 6× multiple split-the-baby.
+  (3) Insurance <b>float</b> (~$170B) is included as a credited asset, scaled by your float-credit haircut. It's perpetual, low/negative-cost capital that funds the investment book; mainstream SOTPs credit it at 50–100% of face.
   (4) Holdings list is the top 15 of ~42 positions; tail positions roll up into "Other 13F holdings" with editable carry value.
   (5) Q4 2025 13F share counts may be stale relative to Q1 2026 trading activity — refresh from the latest filing if material.
 </div>
+
+<!-- ====================== PRESETS ====================== -->
+<section>
+  <h2>Valuation presets</h2>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+    <button class="btn preset" data-preset="bear" type="button">Bear (conservative)</button>
+    <button class="btn preset" data-preset="base" type="button" style="border-color:var(--pos);color:var(--pos)">Base (mainstream consensus)</button>
+    <button class="btn preset" data-preset="bull" type="button">Bull (Semper Augustus / quality-comp)</button>
+    <span class="mute" style="font-size:11px;align-self:center;margin-left:8px">Click a preset to set all multiples / float credit / deferred-tax recognition. Every input remains editable afterward.</span>
+  </div>
+  <details><summary>What each preset assumes</summary>
+  <div class="mute" style="font-size:11px;padding:8px 0">
+    <b>Bear:</b> Insurance 14x / BNSF 16x / BHE 18x / MSR 14x. Float = $0. Deferred cap-gains tax fully subtracted. Insurance investment income at 0× (treated as full double-count of §1).<br>
+    <b>Base:</b> Insurance 16x / BNSF 19x / BHE 22x / MSR 17x. Float credited at 50% ($85B). 25% of deferred tax subtracted (75% assumed perpetually deferred via hold-forever). Insurance investment income at 6× (partial credit for fixed-income yield portion).<br>
+    <b>Bull:</b> Insurance 18x / BNSF 22x / BHE 25x / MSR 20x. Float credited at 100% ($170B). 0% of deferred tax subtracted (full hold-forever). Insurance investment income at 12× (full credit).
+  </div>
+  </details>
+</section>
 
 <!-- ====================== SUMMARY ====================== -->
 <section>
@@ -100,8 +118,12 @@
 <section>
   <h2>1. Public equity portfolio (Q4 2025 13F · top 15 + tail)</h2>
   <div style="margin-bottom:8px">
-    <span class="mute" style="font-size:11px">Berkshire owes corporate tax (~26%) on realized portfolio gains. Apple cost basis ~$36/share is the famous one. Edit cost basis/sh + corp rate:</span>
-    <span style="margin-left:14px">Corporate tax rate: <input type="number" id="corpTaxRate" value="26" step="0.5" style="width:60px"> %</span>
+    <span class="mute" style="font-size:11px">Berkshire owes corporate tax on realized gains, but holds forever so most is perpetually deferred. Recognition % = how much of the theoretical tax you actually subtract.</span>
+    <div style="margin-top:6px;display:flex;gap:18px;flex-wrap:wrap;align-items:center">
+      <span>Corporate tax rate: <input type="number" id="corpTaxRate" value="26" step="0.5" style="width:60px"> %</span>
+      <span>Deferred-tax recognition: <input type="number" id="taxRecognition" value="25" step="5" min="0" max="100" style="width:60px"> %</span>
+      <span class="mute" style="font-size:11px">(0% = pure hold-forever, 100% = full liquidation)</span>
+    </div>
   </div>
   <table id="eqTable">
     <thead><tr>
@@ -266,21 +288,21 @@ const equityHoldings = [
 ];
 
 // Operating segments — Q1 2026 quarterly earnings × annualized × P/E multiple.
-// invIncome flagged true so we render it but set default multiple to 0 (don't double-count).
+// Defaults set to "Base" preset (mainstream consensus).
 const segments = [
-  {name:"Insurance — Underwriting",    desc:"GEICO, BHRG, Gen Re, Primary, Alleghany",   qE:1.72,  mult:14, note:""},
-  {name:"BNSF Railway",                 desc:"Class I freight railroad",                  qE:1.38,  mult:16, note:""},
-  {name:"Berkshire Hathaway Energy",    desc:"Utilities, pipelines, renewables",          qE:1.11,  mult:18, note:""},
-  {name:"Manufacturing / Service / Retail", desc:"PCC, Lubrizol, Marmon, See's, Dairy Queen, etc.", qE:4.46, mult:14, note:""},
-  {name:"Insurance — Investment Income", desc:"Yield on equities + bonds (excluded — already in §1)", qE:2.68, mult:0,  note:"⚠ leave at 0× to avoid double-count"},
+  {name:"Insurance — Underwriting",    desc:"GEICO, BHRG, Gen Re, Primary, Alleghany",   qE:1.72,  mult:16, note:""},
+  {name:"BNSF Railway",                 desc:"Class I freight railroad",                  qE:1.38,  mult:19, note:""},
+  {name:"Berkshire Hathaway Energy",    desc:"Utilities, pipelines, renewables",          qE:1.11,  mult:22, note:""},
+  {name:"Manufacturing / Service / Retail", desc:"PCC, Lubrizol, Marmon, See's, Dairy Queen, OxyChem etc.", qE:4.46, mult:17, note:""},
+  {name:"Insurance — Investment Income", desc:"~60% fixed-income yield + 40% equity divs", qE:2.68,  mult:6,  note:"partial credit — fixed-income yield is not double-counted"},
 ];
 
-// Cash & float
+// Cash & float — Float is now a real line with editable credit %.
 const cashLines = [
   {name:"Cash & equivalents",          src:"Q1'26 10-Q", carry:51.5,  haircut:0},
   {name:"Short-term U.S. T-bills",     src:"Q1'26 10-Q", carry:339.3, haircut:0},
   {name:"Other fixed maturity securities", src:"10-Q",  carry:18.0,  haircut:5},
-  // Float intentionally NOT here — informational only.
+  {name:"Insurance float (credit %)",  src:"Q1'26",     carry:170.0, haircut:50}, // Base preset = 50% credit
 ];
 
 // Subsidiary debt — face values (rough). 100% mark factor by default = subtract at face.
@@ -395,6 +417,7 @@ function buildTax(){
 function recalc(){
   // EQUITY HOLDINGS (values in $B)
   const corpTax = (parseFloat(document.getElementById("corpTaxRate").value)||0)/100;
+  const taxRecog = (parseFloat(document.getElementById("taxRecognition").value)||0)/100;
   let eqTotal=0, eqBasisTotal=0, eqGainTotal=0, eqTaxTotal=0, eqAfterTaxTotal=0;
   // shares are in millions, price in $, so value in $M; /1000 for $B
   equityHoldings.forEach(h => eqTotal += h.shares * h.price / 1000);
@@ -402,7 +425,7 @@ function recalc(){
     const v = h.shares * h.price / 1000;
     const basis = h.shares * h.cost / 1000;
     const gain = v - basis;
-    const tax = Math.max(0, gain) * corpTax;
+    const tax = Math.max(0, gain) * corpTax * taxRecog;  // recognition factor for hold-forever
     const afterTax = v - tax;
     eqBasisTotal += basis; eqGainTotal += gain; eqTaxTotal += tax; eqAfterTaxTotal += afterTax;
     document.querySelector(`[data-eqval="${i}"]`).textContent = fmtB(v);
@@ -530,6 +553,25 @@ document.addEventListener("input", e=>{
   }
   recalc();
 });
+
+// ============== PRESETS ==============
+const PRESETS = {
+  bear: { mults:[14,16,18,14,0], floatHaircut:100, taxRecog:100 },
+  base: { mults:[16,19,22,17,6], floatHaircut:50,  taxRecog:25  },
+  bull: { mults:[18,22,25,20,12], floatHaircut:0,  taxRecog:0   },
+};
+
+function applyPreset(key) {
+  const p = PRESETS[key]; if (!p) return;
+  segments.forEach((s, i) => s.mult = p.mults[i]);
+  cashLines.forEach(c => { if (c.name.startsWith("Insurance float")) c.haircut = p.floatHaircut; });
+  document.getElementById("taxRecognition").value = p.taxRecog;
+  // Re-render values in the input fields
+  document.querySelectorAll('[data-seg][data-f="mult"]').forEach((el, i) => el.value = segments[i].mult);
+  document.querySelectorAll('[data-cash][data-f="haircut"]').forEach((el, i) => el.value = cashLines[i].haircut);
+  recalc();
+}
+document.querySelectorAll(".preset").forEach(b => b.addEventListener("click", () => applyPreset(b.dataset.preset)));
 
 buildEquity();
 buildSegments();
