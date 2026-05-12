@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Berkshire Hathaway (BRK) — SOTP Workbook · Deep Value Flow</title>
+<meta name="description" content="Live sum-of-the-parts valuation for Berkshire Hathaway — public equity portfolio, operating segments (Insurance, BNSF, BHE, MSR), cash, debt, with editable P/E multiples and tax-on-exit estimator.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Berkshire Hathaway SOTP — Live Workbook">
+<meta property="og:description" content="SOTP for BRK with auto-updating prices, editable operating-segment P/E multiples, and per-B-share intrinsic value.">
+<meta property="og:site_name" content="Deep Value Flow">
+<meta name="twitter:card" content="summary">
+<style>
+  :root{
+    --bg:#0f1115; --panel:#161922; --line:#2a2f3a; --ink:#e6e8ee; --mute:#8a93a6;
+    --pos:#3ecf8e; --neg:#ef6b6b; --warn:#e7b13d; --acc:#6ea8ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  header{padding:18px 24px;border-bottom:1px solid var(--line);background:var(--panel)}
+  h1{margin:0;font-size:18px}
+  h2{margin:0 0 8px;font-size:14px;color:var(--acc);text-transform:uppercase;letter-spacing:.5px}
+  .sub{color:var(--mute);font-size:12px;margin-top:4px}
+  main{padding:18px 24px;max-width:1400px;margin:0 auto}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+  th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;font-size:12px}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--mute);font-weight:500;text-transform:uppercase;font-size:10px;letter-spacing:.4px}
+  tfoot td{border-top:1px solid var(--line);border-bottom:none;font-weight:600}
+  input[type=number]{width:90px;background:#0b0d12;border:1px solid var(--line);color:var(--ink);padding:3px 6px;border-radius:4px;text-align:right;font-variant-numeric:tabular-nums}
+  input[type=number]:focus{outline:1px solid var(--acc);border-color:var(--acc)}
+  .num{font-variant-numeric:tabular-nums}
+  .mute{color:var(--mute)}
+  .pos{color:var(--pos)}
+  .neg{color:var(--neg)}
+  .warn{color:var(--warn)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .pillrow{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 0}
+  .pill{background:#0b0d12;border:1px solid var(--line);border-radius:6px;padding:8px 12px;min-width:140px}
+  .pill .k{color:var(--mute);font-size:10px;text-transform:uppercase;letter-spacing:.4px}
+  .pill .v{font-size:16px;margin-top:2px;font-weight:600}
+  details{margin-top:6px}
+  summary{cursor:pointer;color:var(--mute);font-size:11px}
+  .disclaimer{font-size:11px;color:var(--mute);padding:8px 12px;background:#1a1208;border:1px solid #3a2a0a;border-radius:6px;margin-bottom:16px}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .btn{background:#0b0d12;border:1px solid var(--acc);color:var(--acc);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit}
+  .btn:hover{background:var(--acc);color:#0b0d12}
+  .btn:disabled{opacity:.5;cursor:wait}
+  .stamp{font-size:11px;color:var(--mute)}
+  .stamp .live{color:var(--pos)}
+  .stamp .err{color:var(--neg)}
+  nav a{color:var(--mute);text-decoration:none;font-size:12px;margin-right:14px}
+  nav a:hover{color:var(--acc)}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <nav><a href="/">← Deep Value Flow workbooks</a></nav>
+  <h1>Berkshire Hathaway (BRK.A / BRK.B) — Sum-of-the-Parts Workbook</h1>
+  <div class="sub">Source data: Q1 2026 10-Q (May 2026 release, Greg Abel's first quarter as CEO) and Q4 2025 13F. Per-B-share intrinsic value computed on 4.32B B-equivalent shares.</div>
+  <div class="topbar">
+    <span class="stamp" id="priceStamp">Prices: loading…</span>
+    <button class="btn" id="refreshBtn" type="button">↻ Refresh prices</button>
+  </div>
+</header>
+
+<main>
+
+<div class="disclaimer">
+  <b>Method &amp; caveats:</b>
+  (1) Operating segments valued via <b>after-tax earnings × P/E multiple</b>, not revenue (Berkshire's businesses have stable margins so earnings multiples are more meaningful than revenue multiples).
+  (2) <b>Insurance investment income is intentionally excluded from segment valuation</b> — it's the yield on the public equity portfolio already captured at market in section 1. Including it as a multiplied segment double-counts the equities.
+  (3) Insurance <b>float</b> (~$170B) is shown informationally — it supports the investment portfolio but isn't subtracted as a liability because policyholder claims are funded by the assets it backs.
+  (4) Holdings list is the top 15 of ~42 positions; tail positions roll up into "Other 13F holdings" with editable carry value.
+  (5) Q4 2025 13F share counts may be stale relative to Q1 2026 trading activity — refresh from the latest filing if material.
+</div>
+
+<!-- ====================== SUMMARY ====================== -->
+<section>
+  <h2>Live SOTP per B-share</h2>
+  <div class="pillrow">
+    <div class="pill"><div class="k">Equity portfolio (after-tax)</div><div class="v num" id="sumEq">$0</div></div>
+    <div class="pill"><div class="k">+ Operating segments</div><div class="v num" id="sumSeg">$0</div></div>
+    <div class="pill"><div class="k">+ Cash &amp; T-bills</div><div class="v num" id="sumCash">$0</div></div>
+    <div class="pill"><div class="k">– Deferred corp. cap-gains tax</div><div class="v num neg" id="sumCorpTax">$0</div></div>
+    <div class="pill"><div class="k">– Debt (effective)</div><div class="v num neg" id="sumDebt">$0</div></div>
+    <div class="pill" style="border-color:var(--acc)"><div class="k">Implied equity value</div><div class="v num pos" id="sumEquity">$0</div></div>
+    <div class="pill" style="border-color:var(--acc)"><div class="k">÷ B-equivalent shares</div><div class="v num" id="sumShares">4.32B</div></div>
+    <div class="pill" style="border-color:var(--pos);background:#0b1f15"><div class="k">SOTP / B-share</div><div class="v num pos" id="sumPerShareB">$0.00</div></div>
+    <div class="pill" style="border-color:var(--pos);background:#0b1f15"><div class="k">SOTP / A-share</div><div class="v num pos" id="sumPerShareA">$0</div></div>
+    <div class="pill"><div class="k">BRK.B mkt price</div><div class="v num" id="mktPriceB">$480</div></div>
+    <div class="pill"><div class="k">Premium / (discount)</div><div class="v num" id="sumPrem">—</div></div>
+  </div>
+</section>
+
+<!-- ====================== EQUITY HOLDINGS ====================== -->
+<section>
+  <h2>1. Public equity portfolio (Q4 2025 13F · top 15 + tail)</h2>
+  <div style="margin-bottom:8px">
+    <span class="mute" style="font-size:11px">Berkshire owes corporate tax (~26%) on realized portfolio gains. Apple cost basis ~$36/share is the famous one. Edit cost basis/sh + corp rate:</span>
+    <span style="margin-left:14px">Corporate tax rate: <input type="number" id="corpTaxRate" value="26" step="0.5" style="width:60px"> %</span>
+  </div>
+  <table id="eqTable">
+    <thead><tr>
+      <th>Ticker</th><th>Company</th>
+      <th>Shares (M)</th><th>Price ($)</th>
+      <th>Mkt val ($B)</th>
+      <th>BRK cost / sh ($)</th><th>Cost basis ($B)</th>
+      <th>Unrealized gain ($B)</th><th>Deferred tax ($B)</th>
+      <th>After-tax val ($B)</th><th>% port</th>
+    </tr></thead>
+    <tbody></tbody>
+    <tfoot><tr>
+      <td colspan="4">Totals</td>
+      <td class="num" id="eqTotal">—</td>
+      <td></td>
+      <td class="num" id="eqBasisTotal">—</td>
+      <td class="num" id="eqGainTotal">—</td>
+      <td class="num neg" id="eqTaxTotal">—</td>
+      <td class="num pos" id="eqAfterTaxTotal">—</td>
+      <td></td>
+    </tr></tfoot>
+  </table>
+  <details><summary>Notes on cost bases</summary>
+  <div class="mute" style="padding:8px 0;font-size:11px">
+    Famous bases: Apple ~$36/sh (built 2016–2018), Coca-Cola $1.30B total ($3.25/sh on 400M shares — basically free), AmEx $1.29B total. For names where Buffett has built post-2020 (CVX, OXY, CB, DPZ, NYT) basis is closer to current price. Defaults are best-effort — verify against 10-K disclosures. The deferred tax line is real on a hypothetical full liquidation but unlikely to ever be realized in practice (Berkshire holds forever).
+  </div>
+  </details>
+</section>
+
+<!-- ====================== SEGMENTS ====================== -->
+<section>
+  <h2>2. Operating segments — earnings × P/E multiple</h2>
+  <table id="segTable">
+    <thead><tr>
+      <th>Segment</th><th>What it is</th>
+      <th>Q1'26 op. earnings ($B)</th>
+      <th>Annualized ($B)</th>
+      <th>P/E multiple</th>
+      <th>Implied value ($B)</th>
+    </tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="5">Total operating segments</td><td class="num pos" id="segTotal">—</td></tr></tfoot>
+  </table>
+  <details open><summary><b style="color:var(--warn)">Why "Insurance Investment Income" is intentionally not multiplied ⚠</b></summary>
+  <div class="mute" style="padding:8px 0;font-size:11px">
+    Insurance Investment Income ($2.68B Q1'26 = ~$10.7B annualized) is the dividend/interest yield on the public equity portfolio + bond holdings. Those assets are already captured at fair market value in section 1 (equities) and section 3 (cash/T-bills/fixed income). Multiplying the yield by a P/E multiple would double-count those same assets. Shown informationally only — set its multiple to 0 if you want to be conservative.
+  </div>
+  </details>
+</section>
+
+<!-- ====================== CASH & FLOAT ====================== -->
+<section>
+  <h2>3. Cash, T-bills, and float</h2>
+  <table id="cashTable">
+    <thead><tr><th>Line</th><th>Source</th><th>Carrying value ($B)</th><th>Haircut %</th><th>SOTP value ($B)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="4">Total cash &amp; equivalents counted in SOTP</td><td class="num pos" id="cashTotal">—</td></tr></tfoot>
+  </table>
+  <details><summary>Why float isn't subtracted</summary>
+  <div class="mute" style="padding:8px 0;font-size:11px">
+    Insurance float (~$170B as of Q1 2026) is policyholder premium held until claims are paid — economically "free" capital that funds the investment portfolio. It's a liability technically, but it's matched by the asset side (the equity portfolio + cash). Subtracting float would double-count: the assets are valued, so subtracting the liability that funds them creates phantom debt. Same logic for the corresponding policy reserves. The <i>cost</i> of float (underwriting losses) shows up in the Insurance Underwriting segment line above.
+  </div>
+  </details>
+</section>
+
+<!-- ====================== DEBT ====================== -->
+<section>
+  <h2>4. Subsidiary debt</h2>
+  <div style="margin-bottom:8px">
+    <span class="mute" style="font-size:11px">Berkshire debt is mostly at subsidiary level (BNSF and BHE) — IG-rated, term loans &amp; senior notes. Mark factor lets you toggle between face value (conservative) and a discount to face (if you assume rates fall and bonds can be refinanced cheaper).</span>
+    <div style="margin-top:6px;display:flex;align-items:center;gap:10px">
+      <span style="font-size:11px">Market disc (0%)</span>
+      <input type="range" id="debtMarkFactor" min="0" max="100" value="100" style="flex:1;max-width:300px">
+      <span style="font-size:11px">Face (100%)</span>
+      <span class="num" id="debtMarkLabel" style="margin-left:8px;font-weight:600">100%</span>
+    </div>
+  </div>
+  <table id="debtTable">
+    <thead><tr><th>Borrower</th><th>Type</th><th>Face ($B)</th><th>Avg coupon</th><th>SOTP value ($B)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><td colspan="2">Total debt</td><td class="num neg" id="debtFaceTotal">—</td><td></td><td class="num neg" id="debtEffTotal">—</td></tr></tfoot>
+  </table>
+</section>
+
+<!-- ====================== COST BASIS / TAX ====================== -->
+<section>
+  <h2>5. Your cost basis &amp; tax-on-exit estimator (BRK.A / BRK.B lots)</h2>
+  <table id="taxTable">
+    <thead><tr>
+      <th>Lot / Position</th><th>Ticker</th>
+      <th>Shares</th><th>Cost / sh ($)</th><th>Total basis ($)</th>
+      <th>Current price ($)</th><th>Current value ($)</th>
+      <th>Gain / (loss) ($)</th><th>Type</th><th>Tax rate %</th><th>Tax owed ($)</th><th>Net proceeds ($)</th>
+    </tr></thead>
+    <tbody></tbody>
+    <tfoot>
+      <tr><td colspan="4">Totals</td>
+        <td class="num" id="taxBasisTotal">—</td><td></td>
+        <td class="num" id="taxValueTotal">—</td>
+        <td class="num" id="taxGainTotal">—</td>
+        <td colspan="2"></td>
+        <td class="num neg" id="taxOwedTotal">—</td>
+        <td class="num pos" id="taxNetTotal">—</td>
+      </tr>
+    </tfoot>
+  </table>
+  <div class="mute" style="font-size:11px;margin-top:6px">LT = long-term (held &gt; 1 yr). ST = short-term (ordinary income).</div>
+</section>
+
+<!-- ====================== SHARES &amp; MARKET ====================== -->
+<section>
+  <div class="grid2">
+    <div>
+      <h2>Share count &amp; market price</h2>
+      <table>
+        <tr><td>Class A shares outstanding (M)</td><td><input type="number" id="sharesA" value="1.44" step="0.01"></td><td class="mute">M</td></tr>
+        <tr><td>Class B shares outstanding (M)</td><td><input type="number" id="sharesB" value="2159" step="1"></td><td class="mute">M</td></tr>
+        <tr><td><b>Total B-equivalent shares</b></td><td colspan="2" class="num" id="dilutedDisplay">4,319 M</td></tr>
+        <tr><td>Current BRK.B price ($)</td><td><input type="number" id="marketPriceB" value="480" step="0.50"></td><td class="mute">$</td></tr>
+        <tr><td>Implied BRK.A ($)</td><td colspan="2" class="num mute" id="impliedA">$720,000</td></tr>
+      </table>
+    </div>
+    <div>
+      <h2>Reference values</h2>
+      <table>
+        <tr><td>Book value / B-share (Mar 2026)</td><td colspan="2" class="num">$337.15</td></tr>
+        <tr><td>Insurance float (informational)</td><td colspan="2" class="num">~$170B</td></tr>
+        <tr><td>Trailing op earnings (annualized Q1)</td><td colspan="2" class="num">~$45.4B</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="disclaimer">
+  <b>Sources:</b> Berkshire Q1 2026 10-Q (May 2 2026 release); Q4 2025 13F (filed Feb 17 2026); Yahoo Finance pricing. <b>Not investment advice.</b>
+</div>
+
+</main>
+
+<script type="module">
+//
+// ============== DATA SOURCED FROM FILINGS / MARKET (May 2026) ==============
+//
+
+// Top 15 of 42 13F holdings as of Q4 2025. Share counts in millions, cost basis is BRK's per-share cost.
+const equityHoldings = [
+  {tkr:"AAPL",  name:"Apple Inc.",                       shares:280.0,  price:215.00, cost:36.00 },
+  {tkr:"AXP",   name:"American Express",                 shares:152.0,  price:330.00, cost:8.50 },
+  {tkr:"BAC",   name:"Bank of America",                  shares:605.0,  price:48.00,  cost:14.00 },
+  {tkr:"KO",    name:"Coca-Cola",                        shares:400.0,  price:75.00,  cost:3.25 },
+  {tkr:"CVX",   name:"Chevron",                          shares:118.0,  price:165.00, cost:128.00 },
+  {tkr:"OXY",   name:"Occidental Petroleum",             shares:265.0,  price:54.00,  cost:50.00 },
+  {tkr:"MCO",   name:"Moody's",                          shares:24.0,   price:475.00, cost:11.00 },
+  {tkr:"KHC",   name:"Kraft Heinz",                      shares:325.0,  price:33.00,  cost:42.00 },
+  {tkr:"CB",    name:"Chubb",                            shares:27.0,   price:295.00, cost:240.00 },
+  {tkr:"DVA",   name:"DaVita",                           shares:36.0,   price:160.00, cost:39.00 },
+  {tkr:"VRSN",  name:"VeriSign",                         shares:13.3,   price:270.00, cost:155.00 },
+  {tkr:"SIRI",  name:"Sirius XM",                        shares:120.0,  price:24.00,  cost:35.00 },
+  {tkr:"NYT",   name:"New York Times",                   shares:2.5,    price:55.00,  cost:50.00 },
+  {tkr:"DPZ",   name:"Domino's Pizza",                   shares:2.4,    price:475.00, cost:430.00 },
+  {tkr:"STZ",   name:"Constellation Brands",             shares:6.0,    price:225.00, cost:240.00 },
+];
+
+// Operating segments — Q1 2026 quarterly earnings × annualized × P/E multiple.
+// invIncome flagged true so we render it but set default multiple to 0 (don't double-count).
+const segments = [
+  {name:"Insurance — Underwriting",    desc:"GEICO, BHRG, Gen Re, Primary, Alleghany",   qE:1.72,  mult:14, note:""},
+  {name:"BNSF Railway",                 desc:"Class I freight railroad",                  qE:1.38,  mult:16, note:""},
+  {name:"Berkshire Hathaway Energy",    desc:"Utilities, pipelines, renewables",          qE:1.11,  mult:18, note:""},
+  {name:"Manufacturing / Service / Retail", desc:"PCC, Lubrizol, Marmon, See's, Dairy Queen, etc.", qE:4.46, mult:14, note:""},
+  {name:"Insurance — Investment Income", desc:"Yield on equities + bonds (excluded — already in §1)", qE:2.68, mult:0,  note:"⚠ leave at 0× to avoid double-count"},
+];
+
+// Cash & float
+const cashLines = [
+  {name:"Cash & equivalents",          src:"Q1'26 10-Q", carry:51.5,  haircut:0},
+  {name:"Short-term U.S. T-bills",     src:"Q1'26 10-Q", carry:339.3, haircut:0},
+  {name:"Other fixed maturity securities", src:"10-Q",  carry:18.0,  haircut:5},
+  // Float intentionally NOT here — informational only.
+];
+
+// Subsidiary debt — face values (rough). 100% mark factor by default = subtract at face.
+const debt = [
+  {name:"BNSF Railway",                type:"Senior notes",            face:23.0, cpn:"~4.0%"},
+  {name:"Berkshire Hathaway Energy",   type:"Subsidiary senior notes", face:62.0, cpn:"~4.5%"},
+  {name:"Parent company",              type:"Senior notes (multi-ccy)", face:18.0, cpn:"~3.0%"},
+  {name:"Other subsidiaries",          type:"Various",                 face:8.0,  cpn:"~4.5%"},
+];
+
+// Personal tax lots
+const taxLots = [
+  {label:"Sample lot — BRK.B",   tkr:"BRK-B",  shares:100, costPerShare:280.00, type:"LT", rate:20},
+  {label:"Sample lot — BRK.A",   tkr:"BRK-A",  shares:1,   costPerShare:420000, type:"LT", rate:20},
+];
+
+const priceMap = {"BRK-B":480.00, "BRK-A":720000};
+
+//
+// ============== RENDER ==============
+//
+const fmtB = n => (n>=0?"$":"–$") + Math.abs(n).toLocaleString("en-US",{maximumFractionDigits:1,minimumFractionDigits:1}) + "B";
+const fmt$ = n => "$" + n.toLocaleString("en-US",{maximumFractionDigits:2,minimumFractionDigits:2});
+const pct = n => (n*100).toLocaleString("en-US",{maximumFractionDigits:1}) + "%";
+
+function buildEquity(){
+  const tb = document.querySelector("#eqTable tbody"); tb.innerHTML="";
+  equityHoldings.forEach((h,i)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td><b>${h.tkr}</b></td><td>${h.name}</td>
+      <td><input type="number" step="0.1" data-eq="${i}" data-f="shares" value="${h.shares}"></td>
+      <td><input type="number" step="0.01" data-eq="${i}" data-f="price"  value="${h.price}"></td>
+      <td class="num" data-eqval="${i}"></td>
+      <td><input type="number" step="0.01" data-eq="${i}" data-f="cost"   value="${h.cost}"></td>
+      <td class="num mute" data-eqbasis="${i}"></td>
+      <td class="num" data-eqgain="${i}"></td>
+      <td class="num neg" data-eqtax="${i}"></td>
+      <td class="num pos" data-eqaftertax="${i}"></td>
+      <td class="num mute" data-eqpct="${i}"></td>`;
+    tb.appendChild(tr);
+  });
+  // Add an "Other 13F holdings" plug row
+  const tr = document.createElement("tr");
+  tr.innerHTML = `<td><b>OTHER</b></td><td>Remaining ~27 positions (tail)</td>
+    <td colspan="2" class="mute" style="text-align:right">aggregate carry</td>
+    <td><input type="number" step="1" id="otherTail" value="20.0" style="width:80px"></td>
+    <td colspan="6" class="mute" style="text-align:left">  ← edit this $B total for tail of 13F (no per-share data needed; treated as already after-tax)</td>`;
+  tb.appendChild(tr);
+}
+
+function buildSegments(){
+  const tb = document.querySelector("#segTable tbody"); tb.innerHTML="";
+  segments.forEach((s,i)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td><b>${s.name}</b>${s.note?` <span class="warn" style="font-size:10px">${s.note}</span>`:""}</td><td class="mute">${s.desc}</td>
+      <td><input type="number" step="0.01" data-seg="${i}" data-f="qE" value="${s.qE}"></td>
+      <td class="num mute" data-segann="${i}"></td>
+      <td><input type="number" step="0.5" data-seg="${i}" data-f="mult" value="${s.mult}"></td>
+      <td class="num pos" data-segval="${i}"></td>`;
+    tb.appendChild(tr);
+  });
+}
+
+function buildCash(){
+  const tb = document.querySelector("#cashTable tbody"); tb.innerHTML="";
+  cashLines.forEach((c,i)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${c.name}</td><td class="mute">${c.src}</td>
+      <td><input type="number" step="0.1" data-cash="${i}" data-f="carry" value="${c.carry}"></td>
+      <td><input type="number" step="1" data-cash="${i}" data-f="haircut" value="${c.haircut}"></td>
+      <td class="num" data-cashval="${i}"></td>`;
+    tb.appendChild(tr);
+  });
+}
+
+function buildDebt(){
+  const tb = document.querySelector("#debtTable tbody"); tb.innerHTML="";
+  debt.forEach((d,i)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${d.name}</td><td class="mute">${d.type}</td>
+      <td><input type="number" step="0.5" data-debt="${i}" data-f="face" value="${d.face}"></td>
+      <td class="mute">${d.cpn}</td>
+      <td class="num neg" data-debteff="${i}"></td>`;
+    tb.appendChild(tr);
+  });
+}
+
+function buildTax(){
+  const tb = document.querySelector("#taxTable tbody"); tb.innerHTML="";
+  taxLots.forEach((l,i)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${l.label}</td><td><b>${l.tkr}</b></td>
+      <td><input type="number" step="1" data-tax="${i}" data-f="shares" value="${l.shares}"></td>
+      <td><input type="number" step="0.01" data-tax="${i}" data-f="costPerShare" value="${l.costPerShare}"></td>
+      <td class="num" data-taxbasis="${i}"></td>
+      <td class="num mute" data-taxpx="${i}"></td>
+      <td class="num" data-taxval="${i}"></td>
+      <td class="num" data-taxgain="${i}"></td>
+      <td><select data-tax="${i}" data-f="type">
+        <option ${l.type==="LT"?"selected":""}>LT</option><option ${l.type==="ST"?"selected":""}>ST</option>
+      </select></td>
+      <td><input type="number" step="0.1" data-tax="${i}" data-f="rate" value="${l.rate}"></td>
+      <td class="num neg" data-taxowed="${i}"></td>
+      <td class="num pos" data-taxnet="${i}"></td>`;
+    tb.appendChild(tr);
+  });
+}
+
+//
+// ============== RECALC ==============
+//
+function recalc(){
+  // EQUITY HOLDINGS (values in $B)
+  const corpTax = (parseFloat(document.getElementById("corpTaxRate").value)||0)/100;
+  let eqTotal=0, eqBasisTotal=0, eqGainTotal=0, eqTaxTotal=0, eqAfterTaxTotal=0;
+  // shares are in millions, price in $, so value in $M; /1000 for $B
+  equityHoldings.forEach(h => eqTotal += h.shares * h.price / 1000);
+  equityHoldings.forEach((h,i)=>{
+    const v = h.shares * h.price / 1000;
+    const basis = h.shares * h.cost / 1000;
+    const gain = v - basis;
+    const tax = Math.max(0, gain) * corpTax;
+    const afterTax = v - tax;
+    eqBasisTotal += basis; eqGainTotal += gain; eqTaxTotal += tax; eqAfterTaxTotal += afterTax;
+    document.querySelector(`[data-eqval="${i}"]`).textContent = fmtB(v);
+    document.querySelector(`[data-eqbasis="${i}"]`).textContent = fmtB(basis);
+    const ge = document.querySelector(`[data-eqgain="${i}"]`);
+    ge.textContent = (gain>=0?"+":"") + fmtB(gain);
+    ge.className = "num " + (gain>=0?"pos":"neg");
+    document.querySelector(`[data-eqtax="${i}"]`).textContent = fmtB(tax);
+    document.querySelector(`[data-eqaftertax="${i}"]`).textContent = fmtB(afterTax);
+    document.querySelector(`[data-eqpct="${i}"]`).textContent = pct(v/eqTotal);
+    if(priceMap[h.tkr]) priceMap[h.tkr] = h.price;
+  });
+  // Add tail
+  const otherTail = parseFloat(document.getElementById("otherTail")?.value)||0;
+  eqTotal += otherTail;
+  eqAfterTaxTotal += otherTail;
+  document.getElementById("eqTotal").textContent = fmtB(eqTotal);
+  document.getElementById("eqBasisTotal").textContent = fmtB(eqBasisTotal);
+  document.getElementById("eqGainTotal").textContent = (eqGainTotal>=0?"+":"") + fmtB(eqGainTotal);
+  document.getElementById("eqTaxTotal").textContent = fmtB(eqTaxTotal);
+  document.getElementById("eqAfterTaxTotal").textContent = fmtB(eqAfterTaxTotal);
+
+  // SEGMENTS ($B)
+  let segTotal = 0;
+  segments.forEach((s,i)=>{
+    const ann = s.qE * 4;
+    const v = ann * s.mult;
+    segTotal += v;
+    document.querySelector(`[data-segann="${i}"]`).textContent = ann.toFixed(1);
+    document.querySelector(`[data-segval="${i}"]`).textContent = fmtB(v);
+  });
+  document.getElementById("segTotal").textContent = fmtB(segTotal);
+
+  // CASH ($B)
+  let cashTotal = 0;
+  cashLines.forEach((c,i)=>{
+    const v = c.carry * (1 - c.haircut/100);
+    cashTotal += v;
+    document.querySelector(`[data-cashval="${i}"]`).textContent = fmtB(v);
+  });
+  document.getElementById("cashTotal").textContent = fmtB(cashTotal);
+
+  // DEBT ($B)
+  const markFactor = (parseFloat(document.getElementById("debtMarkFactor").value)||100)/100;
+  document.getElementById("debtMarkLabel").textContent = Math.round(markFactor*100) + "%";
+  let debtFaceTotal=0, debtEffTotal=0;
+  debt.forEach((d,i)=>{
+    debtFaceTotal += d.face;
+    const eff = d.face * markFactor; // 100% = face, 0% = zero (treat IG debt as fully discountable if rates plummet — extreme case)
+    debtEffTotal += eff;
+    document.querySelector(`[data-debteff="${i}"]`).textContent = fmtB(eff);
+  });
+  document.getElementById("debtFaceTotal").textContent = fmtB(debtFaceTotal);
+  document.getElementById("debtEffTotal").textContent = fmtB(debtEffTotal);
+
+  // SHARES
+  const sA = parseFloat(document.getElementById("sharesA").value)||0; // millions
+  const sB = parseFloat(document.getElementById("sharesB").value)||0; // millions
+  const bEq = sB + sA * 1500; // total B-equivalent in millions
+  document.getElementById("dilutedDisplay").textContent = bEq.toLocaleString("en-US",{maximumFractionDigits:0}) + " M";
+  document.getElementById("sumShares").textContent = (bEq/1000).toFixed(2) + "B";
+
+  // SOTP
+  const mktPxB = parseFloat(document.getElementById("marketPriceB").value)||0;
+  priceMap["BRK-B"] = mktPxB;
+  priceMap["BRK-A"] = mktPxB * 1500;
+  document.getElementById("impliedA").textContent = "$" + (mktPxB*1500).toLocaleString("en-US",{maximumFractionDigits:0});
+
+  const equityValueB = eqAfterTaxTotal + segTotal + cashTotal - debtEffTotal; // $B
+  const perShareB = equityValueB * 1000 / bEq; // bEq in millions → / millions → $ per share
+  const perShareA = perShareB * 1500;
+
+  document.getElementById("sumEq").textContent = fmtB(eqTotal);
+  document.getElementById("sumSeg").textContent = fmtB(segTotal);
+  document.getElementById("sumCash").textContent = fmtB(cashTotal);
+  document.getElementById("sumCorpTax").textContent = fmtB(-eqTaxTotal);
+  document.getElementById("sumDebt").textContent = fmtB(-debtEffTotal);
+  document.getElementById("sumEquity").textContent = fmtB(equityValueB);
+  document.getElementById("sumPerShareB").textContent = fmt$(perShareB);
+  document.getElementById("sumPerShareA").textContent = "$" + (perShareA).toLocaleString("en-US",{maximumFractionDigits:0});
+  document.getElementById("mktPriceB").textContent = fmt$(mktPxB);
+  const prem = (perShareB - mktPxB) / mktPxB;
+  const premEl = document.getElementById("sumPrem");
+  premEl.textContent = (prem>=0?"+":"") + (prem*100).toFixed(1) + "%";
+  premEl.className = "v num " + (prem>=0?"pos":"neg");
+
+  // TAX (personal — per share, $)
+  let basisTot=0, valTot=0, gainTot=0, owedTot=0, netTot=0;
+  taxLots.forEach((l,i)=>{
+    const basis = l.shares * l.costPerShare;
+    const px = priceMap[l.tkr] || 0;
+    const val = l.shares * px;
+    const gain = val - basis;
+    const owed = Math.max(0, gain * l.rate/100);
+    const net = val - owed;
+    basisTot += basis; valTot += val; gainTot += gain; owedTot += owed; netTot += net;
+    document.querySelector(`[data-taxbasis="${i}"]`).textContent = "$" + basis.toLocaleString("en-US",{maximumFractionDigits:0});
+    document.querySelector(`[data-taxpx="${i}"]`).textContent = fmt$(px);
+    document.querySelector(`[data-taxval="${i}"]`).textContent = "$" + val.toLocaleString("en-US",{maximumFractionDigits:0});
+    const gainEl = document.querySelector(`[data-taxgain="${i}"]`);
+    gainEl.textContent = (gain>=0?"+$":"-$") + Math.abs(gain).toLocaleString("en-US",{maximumFractionDigits:0});
+    gainEl.className = "num " + (gain>=0?"pos":"neg");
+    document.querySelector(`[data-taxowed="${i}"]`).textContent = "$" + owed.toLocaleString("en-US",{maximumFractionDigits:0});
+    document.querySelector(`[data-taxnet="${i}"]`).textContent = "$" + net.toLocaleString("en-US",{maximumFractionDigits:0});
+  });
+  document.getElementById("taxBasisTotal").textContent = "$" + basisTot.toLocaleString("en-US",{maximumFractionDigits:0});
+  document.getElementById("taxValueTotal").textContent = "$" + valTot.toLocaleString("en-US",{maximumFractionDigits:0});
+  const gtEl = document.getElementById("taxGainTotal");
+  gtEl.textContent = (gainTot>=0?"+$":"-$") + Math.abs(gainTot).toLocaleString("en-US",{maximumFractionDigits:0});
+  gtEl.className = "num " + (gainTot>=0?"pos":"neg");
+  document.getElementById("taxOwedTotal").textContent = "$" + owedTot.toLocaleString("en-US",{maximumFractionDigits:0});
+  document.getElementById("taxNetTotal").textContent = "$" + netTot.toLocaleString("en-US",{maximumFractionDigits:0});
+}
+
+// wire up
+document.addEventListener("input", e=>{
+  const el = e.target;
+  if(el.dataset.eq!=null) equityHoldings[el.dataset.eq][el.dataset.f] = parseFloat(el.value)||0;
+  if(el.dataset.seg!=null) segments[el.dataset.seg][el.dataset.f] = parseFloat(el.value)||0;
+  if(el.dataset.cash!=null) cashLines[el.dataset.cash][el.dataset.f] = parseFloat(el.value)||0;
+  if(el.dataset.debt!=null) debt[el.dataset.debt][el.dataset.f] = parseFloat(el.value)||0;
+  if(el.dataset.tax!=null) {
+    const f = el.dataset.f;
+    taxLots[el.dataset.tax][f] = (f==="type") ? el.value : (parseFloat(el.value)||0);
+  }
+  recalc();
+});
+
+buildEquity();
+buildSegments();
+buildCash();
+buildDebt();
+buildTax();
+recalc();
+
+//
+// ============== LIVE PRICE FETCH ==============
+//
+import { priceMap as fetchPriceMap } from "/shared/prices.js";
+
+const LIVE_TICKERS = [
+  "BRK-B","BRK-A",
+  ...equityHoldings.map(h => h.tkr)
+];
+
+const stampEl = document.getElementById("priceStamp");
+const btn = document.getElementById("refreshBtn");
+
+function setStamp(html, cls="") { stampEl.innerHTML = html; stampEl.className = "stamp " + cls; }
+
+async function refreshPrices({force=false}={}) {
+  btn.disabled = true; const old = btn.textContent; btn.textContent = "Fetching…";
+  try {
+    const { map, fetchedAt, fromCache } = await fetchPriceMap(LIVE_TICKERS, { force });
+    let updates = 0;
+    equityHoldings.forEach(h => { if (typeof map[h.tkr]==="number") { h.price=map[h.tkr]; updates++; } });
+    if (typeof map["BRK-B"] === "number") {
+      document.getElementById("marketPriceB").value = map["BRK-B"].toFixed(2);
+    }
+    document.querySelectorAll('[data-eq][data-f="price"]').forEach((el,i) => {
+      el.value = equityHoldings[i].price.toFixed(2);
+    });
+    recalc();
+    const dt = new Date(fetchedAt);
+    const when = dt.toLocaleTimeString("en-US", {hour:"2-digit", minute:"2-digit"}) +
+                 ", " + dt.toLocaleDateString("en-US", {month:"short", day:"numeric"});
+    setStamp(`<span class="live">● Live</span> · ${updates} prices updated · ${fromCache?"cached":"fresh"} @ ${when}`);
+  } catch (e) {
+    setStamp(`<span class="err">⚠ Price fetch failed:</span> ${e.message}. Edit prices manually.`);
+    console.error(e);
+  } finally {
+    btn.disabled = false; btn.textContent = old;
+  }
+}
+
+btn.addEventListener("click", () => refreshPrices({force:true}));
+refreshPrices();
+setInterval(() => { if (!document.hidden) refreshPrices(); }, 5 * 60 * 1000);
+</script>
+</body>
+</html>
