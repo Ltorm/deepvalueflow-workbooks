@@ -3,159 +3,420 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Deep Value Flow · Workbooks</title>
-<meta name="description" content="Interactive sum-of-the-parts valuation workbooks for deep-value, special-situation, and distressed names.">
+<title>Deep Value Flow · SOTP Workbooks &amp; Research</title>
+<meta name="description" content="Interactive sum-of-the-parts valuation workbooks and deep-value research from deepvalueflow.com. Live, editable models for special situations, holding companies, and Berkshire-style compounders.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Deep Value Flow · Workbooks">
-<meta property="og:description" content="Live SOTP workbooks for deep-value and special-situation names.">
+<meta property="og:title" content="Deep Value Flow · SOTP Workbooks &amp; Research">
+<meta property="og:description" content="Live SOTP workbooks for deep-value names + the Deep Value Flow Substack.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://substackcdn.com">
 <style>
   :root{
-    --bg:#0f1115; --panel:#161922; --line:#2a2f3a; --ink:#e6e8ee; --mute:#8a93a6;
-    --pos:#3ecf8e; --neg:#ef6b6b; --warn:#e7b13d; --acc:#6ea8ff;
+    --bg:#0f1115; --panel:#161922; --panel2:#1c2230; --line:#2a2f3a; --ink:#e6e8ee; --mute:#8a93a6;
+    --pos:#3ecf8e; --neg:#ef6b6b; --warn:#e7b13d; --acc:#6ea8ff; --acc2:#a78bfa;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-  header{padding:36px 24px 18px;border-bottom:1px solid var(--line);background:var(--panel)}
-  header .wrap{max-width:1100px;margin:0 auto}
-  h1{margin:0;font-size:24px}
-  .tag{color:var(--acc);font-size:11px;letter-spacing:.6px;text-transform:uppercase;margin-bottom:6px}
-  .sub{color:var(--mute);font-size:14px;margin-top:6px;max-width:640px}
-  main{padding:30px 24px;max-width:1100px;margin:0 auto}
-  h2{font-size:13px;color:var(--acc);text-transform:uppercase;letter-spacing:.5px;margin:0 0 14px}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:var(--acc);text-decoration:none}
+  a:hover{color:var(--ink)}
+
+  /* ============ HERO ============ */
+  .hero{
+    position:relative;overflow:hidden;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(110,168,255,.15), transparent 60%),
+      radial-gradient(800px 500px at 10% 110%, rgba(167,139,250,.12), transparent 60%),
+      linear-gradient(180deg, var(--panel) 0%, var(--bg) 100%);
+    border-bottom:1px solid var(--line);
+  }
+  .hero-inner{max-width:1100px;margin:0 auto;padding:56px 24px 48px}
+  .brand{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--mute);letter-spacing:.5px;text-transform:uppercase;margin-bottom:18px}
+  .brand .dot{width:8px;height:8px;background:var(--pos);border-radius:50%;box-shadow:0 0 12px var(--pos)}
+  .brand b{color:var(--ink);letter-spacing:.5px}
+  .hero h1{
+    font-size:clamp(34px,5vw,52px);font-weight:700;margin:0 0 14px;line-height:1.05;
+    background:linear-gradient(135deg, var(--ink) 0%, var(--acc) 80%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p.lede{font-size:17px;line-height:1.5;color:var(--mute);max-width:680px;margin:0 0 24px}
+  .hero p.lede b{color:var(--ink)}
+  .hero-cta{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{display:inline-block;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all .15s;font-family:inherit}
+  .btn-primary{background:var(--acc);color:#0b0d12;border-color:var(--acc)}
+  .btn-primary:hover{background:#9bc1ff;color:#0b0d12}
+  .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+  .btn-ghost:hover{border-color:var(--acc);color:var(--acc)}
+  .hero-stats{display:flex;gap:28px;margin-top:36px;flex-wrap:wrap}
+  .stat{}
+  .stat .n{font-size:24px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+  .stat .l{font-size:11px;color:var(--mute);letter-spacing:.4px;text-transform:uppercase;margin-top:2px}
+
+  /* ============ MAIN ============ */
+  main{padding:48px 24px;max-width:1100px;margin:0 auto}
+  section{margin-bottom:56px}
+  h2.section{font-size:11px;color:var(--acc);text-transform:uppercase;letter-spacing:.8px;margin:0 0 8px;font-weight:600}
+  h3.section-title{font-size:22px;font-weight:600;margin:0 0 18px}
+
+  /* ============ CARDS ============ */
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;text-decoration:none;color:var(--ink);display:flex;flex-direction:column;gap:8px;transition:border-color .15s,transform .15s}
-  .card:hover{border-color:var(--acc);transform:translateY(-1px)}
-  .card .tkr{font-size:11px;color:var(--mute);letter-spacing:.4px}
-  .card .name{font-size:17px;font-weight:600}
-  .card .thesis{color:var(--mute);font-size:13px;line-height:1.45;flex:1}
-  .card .meta{display:flex;justify-content:space-between;font-size:11px;color:var(--mute);margin-top:6px;padding-top:8px;border-top:1px solid var(--line)}
-  .card .badge{background:#0b0d12;border:1px solid var(--line);border-radius:4px;padding:2px 6px;color:var(--pos);font-size:10px}
-  .card.soon{opacity:.55;cursor:not-allowed}
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;
+    text-decoration:none;color:var(--ink);display:flex;flex-direction:column;gap:8px;
+    transition:border-color .15s,transform .15s,background .15s;
+    position:relative;overflow:hidden;
+  }
+  .card:hover{border-color:var(--acc);transform:translateY(-2px);background:var(--panel2)}
+  .card .tkr{font-size:11px;color:var(--mute);letter-spacing:.4px;font-weight:500}
+  .card .name{font-size:17px;font-weight:600;color:var(--ink)}
+  .card .thesis{color:var(--mute);font-size:13px;line-height:1.5;flex:1}
+  .card .meta{display:flex;justify-content:space-between;font-size:11px;color:var(--mute);margin-top:8px;padding-top:10px;border-top:1px solid var(--line)}
+  .card .badge{background:#0b0d12;border:1px solid var(--line);border-radius:4px;padding:2px 6px;color:var(--pos);font-size:10px;font-weight:500}
+  .card.soon{opacity:.55}
+  .card.soon:hover{transform:none;background:var(--panel)}
   .card.soon .badge{color:var(--warn)}
-  .footer{padding:24px;text-align:center;color:var(--mute);font-size:12px;border-top:1px solid var(--line);margin-top:40px}
-  .footer a{color:var(--mute)}
-  .blurb{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:24px;font-size:13px;color:var(--mute)}
-  .blurb b{color:var(--ink)}
+
+  /* ============ FEATURED ============ */
+  .featured{
+    background:linear-gradient(135deg, var(--panel2) 0%, var(--panel) 100%);
+    border:1px solid var(--line);border-radius:14px;padding:32px;
+    display:grid;grid-template-columns:1.6fr 1fr;gap:32px;align-items:center;
+    position:relative;overflow:hidden;
+  }
+  .featured::before{
+    content:"";position:absolute;top:-100px;right:-100px;width:300px;height:300px;
+    background:radial-gradient(circle, rgba(110,168,255,.15), transparent 70%);pointer-events:none;
+  }
+  .featured .kicker{font-size:11px;color:var(--acc);letter-spacing:.6px;text-transform:uppercase;font-weight:600}
+  .featured h3{font-size:28px;margin:8px 0 10px;color:var(--ink)}
+  .featured p{color:var(--mute);font-size:14px;line-height:1.6;margin:0 0 20px}
+  .featured .stats-row{display:flex;gap:24px;margin-bottom:24px;flex-wrap:wrap}
+  .featured .stats-row > div{}
+  .featured .stats-row .v{font-size:18px;color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+  .featured .stats-row .l{font-size:10px;color:var(--mute);letter-spacing:.4px;text-transform:uppercase;margin-top:2px}
+  @media(max-width:760px){.featured{grid-template-columns:1fr}}
+
+  /* ============ BLOG ============ */
+  .blog-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+  .post{
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    overflow:hidden;text-decoration:none;color:var(--ink);
+    display:flex;flex-direction:column;
+    transition:border-color .15s,transform .15s;
+  }
+  .post:hover{border-color:var(--acc);transform:translateY(-2px)}
+  .post .img{aspect-ratio:16/9;background:linear-gradient(135deg, var(--panel2), var(--line));background-size:cover;background-position:center}
+  .post .body{padding:16px;display:flex;flex-direction:column;gap:6px;flex:1}
+  .post .date{font-size:11px;color:var(--mute);letter-spacing:.3px}
+  .post h4{font-size:15px;line-height:1.35;margin:0;font-weight:600;color:var(--ink)}
+  .post .excerpt{font-size:12px;color:var(--mute);line-height:1.5;flex:1}
+  .post-loading{padding:30px;color:var(--mute);font-size:13px;text-align:center}
+
+  /* ============ FORMS / BOTTOM ============ */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:760px){.two-col{grid-template-columns:1fr}}
+  .panel-box{
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px;
+    display:flex;flex-direction:column;gap:14px;
+  }
+  .panel-box h3{font-size:18px;margin:0 0 4px;font-weight:600;color:var(--ink)}
+  .panel-box p{font-size:13px;color:var(--mute);margin:0;line-height:1.55}
+  .panel-box .icon{
+    width:36px;height:36px;background:#0b0d12;border:1px solid var(--line);
+    border-radius:8px;display:flex;align-items:center;justify-content:center;
+    color:var(--acc);font-size:18px;margin-bottom:4px;
+  }
+  .form-field{display:flex;flex-direction:column;gap:5px}
+  .form-field label{font-size:11px;color:var(--mute);letter-spacing:.3px;text-transform:uppercase;font-weight:500}
+  .form-field input,.form-field textarea{
+    background:#0b0d12;border:1px solid var(--line);color:var(--ink);
+    padding:9px 12px;border-radius:6px;font-size:13px;font-family:inherit;width:100%;
+    transition:border-color .15s;
+  }
+  .form-field input:focus,.form-field textarea:focus{outline:none;border-color:var(--acc)}
+  .form-field textarea{min-height:80px;resize:vertical}
+  .panel-box .submit{align-self:flex-start;margin-top:4px}
+
+  /* Substack iframe */
+  .substack-embed{
+    background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden;
+    width:100%;min-height:120px;
+  }
+  .substack-fallback{
+    background:#0b0d12;border:1px solid var(--line);border-radius:8px;padding:14px;
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .substack-fallback input[type=email]{
+    background:var(--bg);border:1px solid var(--line);color:var(--ink);
+    padding:10px 12px;border-radius:6px;font-size:13px;
+  }
+
+  /* ============ FOOTER ============ */
+  .footer{padding:36px 24px;text-align:center;color:var(--mute);font-size:12px;border-top:1px solid var(--line);margin-top:40px;background:var(--panel)}
+  .footer a{color:var(--mute);margin:0 8px}
+  .footer a:hover{color:var(--acc)}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="wrap">
-    <div class="tag">DEEP VALUE FLOW · WORKBOOKS</div>
-    <h1>Interactive SOTP workbooks</h1>
-    <p class="sub">Live, editable sum-of-the-parts models for deep-value, special-situation, and distressed names. All assumptions are explicit and your inputs recalculate the model in real time. Prices auto-refresh from market data.</p>
+<!-- ============================ HERO ============================ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="brand"><span class="dot"></span><b>Deep Value Flow</b> · workbooks &amp; research</div>
+    <h1>Sum-of-the-parts<br>for serious deep-value investors.</h1>
+    <p class="lede">
+      Live, fully editable SOTP models for <b>holding companies, special situations, and distressed names</b> — paired with research and commentary from the Deep Value Flow Substack. Every assumption is exposed, every input is yours to override, and prices auto-refresh from market data.
+    </p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#workbooks">Browse workbooks ↓</a>
+      <a class="btn btn-ghost" href="https://deepvalueflow.com" target="_blank" rel="noopener">Read the Substack →</a>
+      <a class="btn btn-ghost" href="#request">Request a workbook</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="n">4</div><div class="l">live workbooks</div></div>
+      <div class="stat"><div class="n">4</div><div class="l">in queue</div></div>
+      <div class="stat"><div class="n">Live</div><div class="l">market prices</div></div>
+      <div class="stat"><div class="n">Free</div><div class="l">no signup</div></div>
+    </div>
   </div>
-</header>
+</div>
 
 <main>
 
-  <div class="blurb">
-    <b>How these work:</b> Each workbook is a single self-contained page. Public-holding prices and bond quotes update automatically every few minutes; everything else (multiples, cost bases, debt mark factor, share counts, tax rates) is editable. Nothing is saved server-side — your inputs live in your browser only. <b>Not investment advice.</b>
-  </div>
-
-  <h2>Available now</h2>
-  <div class="grid">
-
-    <a class="card" href="/rily.html">
-      <div class="tkr">NASDAQ: RILY</div>
-      <div class="name">BRC Group Holdings (B. Riley)</div>
-      <div class="thesis">
-        Diversified financial services. Holding company with 31% of Babcock &amp; Wilcox plus 7 operating segments and ~$1.3B of senior debt. Trades at deep discount to liquidation value; debt market discounts solvency concerns. Includes corporate cap-gains tax modeling and a face↔market debt slider.
+  <!-- ============================ FEATURED ============================ -->
+  <section>
+    <h2 class="section">Featured</h2>
+    <a class="featured" href="/brk.html" style="text-decoration:none;color:inherit">
+      <div>
+        <div class="kicker">Latest · Berkshire Hathaway</div>
+        <h3>Greg Abel's first quarter: where does intrinsic actually land?</h3>
+        <p>
+          The most complete public-market SOTP we publish: $390B+ cash, 42 equity positions, four operating empires, and a Bear/Base/Bull preset system so you can toggle between conservative and Bloomstran-style methodologies. Includes float credit, deferred-tax recognition, and Class A/Class B output.
+        </p>
+        <div class="stats-row">
+          <div><div class="v">~$420</div><div class="l">Base SOTP / B-share</div></div>
+          <div><div class="v">$503</div><div class="l">Current BRK.B</div></div>
+          <div><div class="v">Q1 '26</div><div class="l">Data vintage</div></div>
+        </div>
+        <span class="btn btn-primary">Open BRK workbook →</span>
       </div>
-      <div class="meta">
-        <span>Updated May 2026 · Q1'26 10-Q</span>
-        <span class="badge">● Live prices</span>
-      </div>
-    </a>
-
-    <a class="card" href="/brk.html">
-      <div class="tkr">NYSE: BRK.A / BRK.B</div>
-      <div class="name">Berkshire Hathaway</div>
-      <div class="thesis">
-        Greg Abel's first quarter. $390B+ cash &amp; T-bills, 42 public equity positions (Apple/AmEx/BAC/KO/CVX dominate), operating empire of GEICO + BNSF + BHE + manufacturing/service/retail. Bear/Base/Bull presets, float credit, deferred-tax recognition slider.
-      </div>
-      <div class="meta">
-        <span>Updated May 2026 · Q1'26 10-Q</span>
-        <span class="badge">● Live prices</span>
-      </div>
-    </a>
-
-    <a class="card" href="/mkl.html">
-      <div class="tkr">NYSE: MKL</div>
-      <div class="name">Markel Group ("Baby Berkshire")</div>
-      <div class="thesis">
-        Tom Gayner's "Baby Berkshire." Insurance underwriting (93% combined ratio Q1'26) + $11.9B 13F portfolio (post-massive Q1 trim of BRK / GOOG / HD / BN) + Markel Ventures (Industrial / Financial / Consumer). Bear/Base/Bull presets.
-      </div>
-      <div class="meta">
-        <span>Updated May 2026 · Q1'26 10-Q + 13F</span>
-        <span class="badge">● Live prices</span>
+      <div>
+        <div class="card" style="cursor:default" onclick="event.preventDefault()">
+          <div class="tkr">Headline numbers (Q1 2026)</div>
+          <div class="thesis" style="color:var(--ink)">
+            Operating earnings <b>$11.35B</b> (+18% YoY)<br>
+            Cash &amp; T-bills <b>$390.8B</b><br>
+            Book value <b>$337/B-share</b><br>
+            Buybacks <b>resumed</b> March 2026
+          </div>
+        </div>
       </div>
     </a>
+  </section>
 
-    <a class="card" href="/ffh.html">
-      <div class="tkr">TSX: FFH / OTC: FRFHF</div>
-      <div class="name">Fairfax Financial Holdings ("Canadian Berkshire")</div>
-      <div class="thesis">
-        Prem Watsa's holdco — insurance underwriting at 94% CR, $40B+ investment portfolio, but only ~$2B is US-listed (13F). Most value sits in non-US holdings (Eurobank, Fairfax India, Recipe, Quess, Atlas/Poseidon) modeled as a separate associates block. Book value $1,250/share.
-      </div>
-      <div class="meta">
-        <span>Updated May 2026 · Q1'26 release</span>
-        <span class="badge">● Live prices</span>
-      </div>
-    </a>
+  <!-- ============================ WORKBOOKS ============================ -->
+  <section id="workbooks">
+    <h2 class="section">Workbooks · live now</h2>
+    <h3 class="section-title">Interactive SOTP for every name we cover</h3>
+    <div class="grid">
 
-    <!-- Add more workbook cards here as you publish them.
-         Copy the <a> block above, change href + tkr + name + thesis. -->
+      <a class="card" href="/rily.html">
+        <div class="tkr">NASDAQ: RILY</div>
+        <div class="name">BRC Group Holdings (B. Riley)</div>
+        <div class="thesis">
+          Diversified financial services. Holding company with 31% of Babcock &amp; Wilcox plus 7 operating segments and ~$1.3B of senior debt. Trades at deep discount to liquidation value. Corporate cap-gains tax modeling, debt face↔market slider, preferred arrears.
+        </div>
+        <div class="meta"><span>Updated May 2026 · Q1'26 10-Q</span><span class="badge">● Live prices</span></div>
+      </a>
 
-  </div>
+      <a class="card" href="/brk.html">
+        <div class="tkr">NYSE: BRK.A / BRK.B</div>
+        <div class="name">Berkshire Hathaway</div>
+        <div class="thesis">
+          Greg Abel's first quarter. $390B+ cash &amp; T-bills, 42 public equity positions, operating empire of GEICO + BNSF + BHE + manufacturing/service/retail. Bear/Base/Bull presets, float credit, deferred-tax recognition slider.
+        </div>
+        <div class="meta"><span>Updated May 2026 · Q1'26 10-Q</span><span class="badge">● Live prices</span></div>
+      </a>
 
-  <h2 style="margin-top:36px">Coming soon</h2>
-  <div class="grid">
+      <a class="card" href="/mkl.html">
+        <div class="tkr">NYSE: MKL</div>
+        <div class="name">Markel Group ("Baby Berkshire")</div>
+        <div class="thesis">
+          Tom Gayner's "Baby Berkshire." Insurance underwriting (93% combined ratio Q1'26) + $11.9B 13F portfolio (post-massive Q1 trim of BRK / GOOG / HD / BN) + Markel Ventures (Industrial / Financial / Consumer). Bear/Base/Bull presets.
+        </div>
+        <div class="meta"><span>Updated May 2026 · Q1'26 10-Q + 13F</span><span class="badge">● Live prices</span></div>
+      </a>
 
-    <div class="card soon">
-      <div class="tkr">NASDAQ: IAC</div>
-      <div class="name">IAC Inc. (Barry Diller)</div>
-      <div class="thesis">
-        Holds ~14% of MGM Resorts (public), all of Dotdash Meredith (publishing — People, Better Homes, InStyle), Care.com, Turo stake, Vimeo stake, plus net cash. Classic Diller spin-and-stack holdco with a long history of unlocking value via spin-offs (Match Group, Vimeo, Angi).
-      </div>
-      <div class="meta"><span>Q1'26 data</span><span class="badge">In progress</span></div>
+      <a class="card" href="/ffh.html">
+        <div class="tkr">TSX: FFH / OTC: FRFHF</div>
+        <div class="name">Fairfax Financial Holdings ("Canadian Berkshire")</div>
+        <div class="thesis">
+          Prem Watsa's holdco — insurance underwriting at 94% CR, $40B+ investment portfolio, but only ~$2B is US-listed (13F). Most value sits in non-US holdings (Eurobank, Fairfax India, Recipe, Quess, Atlas/Poseidon) modeled as a separate associates block.
+        </div>
+        <div class="meta"><span>Updated May 2026 · Q1'26 release</span><span class="badge">● Live prices</span></div>
+      </a>
+
     </div>
+  </section>
 
-    <div class="card soon">
-      <div class="tkr">NYSE: L</div>
-      <div class="name">Loews Corp (Tisch family)</div>
-      <div class="thesis">
-        ~92% of CNA Financial (publicly listed insurer) + 100% of Boardwalk Pipelines + Loews Hotels + Altium Packaging. Trades at persistent discount to NAV — classic Tisch playbook of patient capital and aggressive buybacks below intrinsic.
-      </div>
-      <div class="meta"><span>Q1'26 data</span><span class="badge">In progress</span></div>
+  <!-- ============================ BLOG FEED ============================ -->
+  <section id="blog">
+    <h2 class="section">From the Substack</h2>
+    <h3 class="section-title">Recent posts on deepvalueflow.com</h3>
+    <div class="blog-grid" id="blogPosts">
+      <div class="post-loading">Loading recent posts from deepvalueflow.com…</div>
     </div>
+    <p style="margin-top:18px"><a href="https://deepvalueflow.com" target="_blank" rel="noopener" class="btn btn-ghost">Read more on Substack →</a></p>
+  </section>
 
-    <div class="card soon">
-      <div class="tkr">NASDAQ: LSXMA / FWONA / BATRA / LLYVA</div>
-      <div class="name">Liberty Media tracking-stock complex (John Malone)</div>
-      <div class="thesis">
-        Four tracking stocks — Liberty Sirius XM, Liberty Formula One, Atlanta Braves Holdings, Liberty Live. Inter-company loans, attribution swaps, and the constant Malone restructuring chess game make this the gold standard of "complicated" SOTP. Will publish one workbook per tracker.
+  <!-- ============================ COMING SOON ============================ -->
+  <section>
+    <h2 class="section">Coming soon</h2>
+    <h3 class="section-title">In the workbook queue</h3>
+    <div class="grid">
+
+      <div class="card soon">
+        <div class="tkr">NASDAQ: IAC</div>
+        <div class="name">IAC Inc. (Barry Diller)</div>
+        <div class="thesis">
+          Holds ~14% of MGM Resorts (public), all of Dotdash Meredith (People, Better Homes, InStyle), Care.com, Turo stake, Vimeo stake, plus net cash. Classic Diller spin-and-stack holdco.
+        </div>
+        <div class="meta"><span>Q1'26 data</span><span class="badge">In progress</span></div>
       </div>
-      <div class="meta"><span>Q1'26 data</span><span class="badge">In progress</span></div>
-    </div>
 
-    <div class="card soon">
-      <div class="tkr">AMS: EXO / OTC: EXXRF</div>
-      <div class="name">Exor N.V. ("European Berkshire" — Agnelli family)</div>
-      <div class="thesis">
-        Controls ~24% of Ferrari (RACE), ~15% of Stellantis (STLA), 26% of CNH Industrial, 15% of Philips, 100% of Juventus, plus growing healthcare bets (Lifenet, Institut Mérieux). Holdco discount has historically ranged 25–40%.
+      <div class="card soon">
+        <div class="tkr">NYSE: L</div>
+        <div class="name">Loews Corp (Tisch family)</div>
+        <div class="thesis">
+          ~92% of CNA Financial (publicly listed insurer) + 100% of Boardwalk Pipelines + Loews Hotels + Altium Packaging. Persistent NAV discount; Tisch buyback playbook.
+        </div>
+        <div class="meta"><span>Q1'26 data</span><span class="badge">In progress</span></div>
       </div>
-      <div class="meta"><span>Q1'26 data</span><span class="badge">Next up</span></div>
-    </div>
 
-  </div>
+      <div class="card soon">
+        <div class="tkr">LSXMA / FWONA / BATRA / LLYVA</div>
+        <div class="name">Liberty Media tracking-stock complex</div>
+        <div class="thesis">
+          Four Malone tracking stocks — Liberty Sirius XM, Liberty Formula One, Atlanta Braves Holdings, Liberty Live. Inter-company loans + attribution swaps = the gold standard of "complicated."
+        </div>
+        <div class="meta"><span>Q1'26 data</span><span class="badge">In progress</span></div>
+      </div>
+
+      <div class="card soon">
+        <div class="tkr">AMS: EXO / OTC: EXXRF</div>
+        <div class="name">Exor N.V. ("European Berkshire" — Agnelli)</div>
+        <div class="thesis">
+          Controls ~24% of Ferrari (RACE), ~15% of Stellantis (STLA), 26% of CNH, 15% of Philips, 100% of Juventus, plus growing healthcare bets. Holdco discount historically 25–40%.
+        </div>
+        <div class="meta"><span>Q1'26 data</span><span class="badge">Next up</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================ SUBSCRIBE + REQUEST ============================ -->
+  <section id="request">
+    <h2 class="section">Get involved</h2>
+    <div class="two-col">
+
+      <div class="panel-box">
+        <div class="icon">✉</div>
+        <h3>Subscribe to the newsletter</h3>
+        <p>Get every new SOTP workbook, deep-value write-up, and market note delivered the moment it's published. No spam, no paywalled fluff.</p>
+        <div class="substack-embed">
+          <iframe src="https://deepvalueflow.substack.com/embed" width="100%" height="240" style="border:0;background:white" frameborder="0" scrolling="no"></iframe>
+        </div>
+        <p style="font-size:11px">If the form above doesn't render, <a href="https://deepvalueflow.com" target="_blank" rel="noopener">subscribe directly on Substack →</a></p>
+      </div>
+
+      <div class="panel-box">
+        <div class="icon">⚙</div>
+        <h3>Request a SOTP workbook</h3>
+        <p>Got a complex holdco or sum-of-the-parts candidate you'd like to see modeled live? Send it over — the most-requested names jump the queue.</p>
+        <form id="requestForm">
+          <div class="form-field">
+            <label for="reqTicker">Ticker / company name</label>
+            <input id="reqTicker" name="ticker" type="text" placeholder="e.g. IAC, Loews, Exor" required>
+          </div>
+          <div class="form-field" style="margin-top:10px">
+            <label for="reqReason">Why this one? (optional)</label>
+            <textarea id="reqReason" name="reason" placeholder="What makes the SOTP interesting? Catalyst? Discount to NAV?"></textarea>
+          </div>
+          <div class="form-field" style="margin-top:10px">
+            <label for="reqEmail">Your email (optional — for a heads-up when it's published)</label>
+            <input id="reqEmail" name="email" type="email" placeholder="you@example.com">
+          </div>
+          <button class="btn btn-primary submit" type="submit">Send request →</button>
+          <p style="font-size:11px" id="requestStatus"></p>
+        </form>
+      </div>
+
+    </div>
+  </section>
 
 </main>
 
 <div class="footer">
-  <a href="https://deepvalueflow.com">deepvalueflow.com</a> · workbooks are educational; not investment advice
+  <a href="/">workbooks</a> ·
+  <a href="https://deepvalueflow.com" target="_blank" rel="noopener">substack</a> ·
+  <a href="https://github.com/Ltorm/deepvalueflow-workbooks" target="_blank" rel="noopener">source on GitHub</a><br>
+  <span style="font-size:11px">Workbooks are educational. <b>Not investment advice.</b> Verify all figures against primary filings.</span>
 </div>
+
+<script>
+// ============ Fetch recent Substack posts ============
+(async function loadPosts() {
+  const grid = document.getElementById("blogPosts");
+  try {
+    const r = await fetch("/api/blog?limit=4");
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const j = await r.json();
+    if (!j.posts || j.posts.length === 0) throw new Error("no posts");
+    grid.innerHTML = j.posts.map(p => {
+      const d = p.pubDate ? new Date(p.pubDate) : null;
+      const dateStr = d && !isNaN(d) ? d.toLocaleDateString("en-US", {month:"short", day:"numeric", year:"numeric"}) : "";
+      const img = p.image ? `<div class="img" style="background-image:url('${p.image.replace(/'/g, "%27")}')"></div>` : `<div class="img"></div>`;
+      return `<a class="post" href="${p.link}" target="_blank" rel="noopener">
+        ${img}
+        <div class="body">
+          <div class="date">${dateStr}</div>
+          <h4>${p.title}</h4>
+          <div class="excerpt">${p.snippet || ""}</div>
+        </div>
+      </a>`;
+    }).join("");
+  } catch (e) {
+    grid.innerHTML = `<div class="post-loading">
+      Couldn't auto-load posts (${e.message}). <a href="https://deepvalueflow.com" target="_blank" rel="noopener">Visit the Substack directly →</a>
+    </div>`;
+  }
+})();
+
+// ============ Request form → mailto ============
+document.getElementById("requestForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  const ticker = document.getElementById("reqTicker").value.trim();
+  const reason = document.getElementById("reqReason").value.trim();
+  const email  = document.getElementById("reqEmail").value.trim();
+  if (!ticker) return;
+  const subject = `[SOTP request] ${ticker}`;
+  const body = [
+    `Ticker / Company: ${ticker}`,
+    "",
+    `Why this name:`,
+    reason || "(not provided)",
+    "",
+    `Submitter email: ${email || "(not provided)"}`,
+    "",
+    "—",
+    "Sent from deepvalueflow-workbooks.pages.dev",
+  ].join("\n");
+  // EDIT THIS: replace requests@deepvalueflow.com with your real inbox.
+  const to = "requests@deepvalueflow.com";
+  window.location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  document.getElementById("requestStatus").textContent = "Opened your email client — hit send to deliver the request.";
+});
+</script>
 
 </body>
 </html>
