@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deep Value Flow · Workbooks</title>
+<meta name="description" content="Interactive sum-of-the-parts valuation workbooks for deep-value, special-situation, and distressed names.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Deep Value Flow · Workbooks">
+<meta property="og:description" content="Live SOTP workbooks for deep-value and special-situation names.">
+<style>
+  :root{
+    --bg:#0f1115; --panel:#161922; --line:#2a2f3a; --ink:#e6e8ee; --mute:#8a93a6;
+    --pos:#3ecf8e; --neg:#ef6b6b; --warn:#e7b13d; --acc:#6ea8ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  header{padding:36px 24px 18px;border-bottom:1px solid var(--line);background:var(--panel)}
+  header .wrap{max-width:1100px;margin:0 auto}
+  h1{margin:0;font-size:24px}
+  .tag{color:var(--acc);font-size:11px;letter-spacing:.6px;text-transform:uppercase;margin-bottom:6px}
+  .sub{color:var(--mute);font-size:14px;margin-top:6px;max-width:640px}
+  main{padding:30px 24px;max-width:1100px;margin:0 auto}
+  h2{font-size:13px;color:var(--acc);text-transform:uppercase;letter-spacing:.5px;margin:0 0 14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;text-decoration:none;color:var(--ink);display:flex;flex-direction:column;gap:8px;transition:border-color .15s,transform .15s}
+  .card:hover{border-color:var(--acc);transform:translateY(-1px)}
+  .card .tkr{font-size:11px;color:var(--mute);letter-spacing:.4px}
+  .card .name{font-size:17px;font-weight:600}
+  .card .thesis{color:var(--mute);font-size:13px;line-height:1.45;flex:1}
+  .card .meta{display:flex;justify-content:space-between;font-size:11px;color:var(--mute);margin-top:6px;padding-top:8px;border-top:1px solid var(--line)}
+  .card .badge{background:#0b0d12;border:1px solid var(--line);border-radius:4px;padding:2px 6px;color:var(--pos);font-size:10px}
+  .card.soon{opacity:.55;cursor:not-allowed}
+  .card.soon .badge{color:var(--warn)}
+  .footer{padding:24px;text-align:center;color:var(--mute);font-size:12px;border-top:1px solid var(--line);margin-top:40px}
+  .footer a{color:var(--mute)}
+  .blurb{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:24px;font-size:13px;color:var(--mute)}
+  .blurb b{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="tag">DEEP VALUE FLOW · WORKBOOKS</div>
+    <h1>Interactive SOTP workbooks</h1>
+    <p class="sub">Live, editable sum-of-the-parts models for deep-value, special-situation, and distressed names. All assumptions are explicit and your inputs recalculate the model in real time. Prices auto-refresh from market data.</p>
+  </div>
+</header>
+
+<main>
+
+  <div class="blurb">
+    <b>How these work:</b> Each workbook is a single self-contained page. Public-holding prices and bond quotes update automatically every few minutes; everything else (multiples, cost bases, debt mark factor, share counts, tax rates) is editable. Nothing is saved server-side — your inputs live in your browser only. <b>Not investment advice.</b>
+  </div>
+
+  <h2>Available now</h2>
+  <div class="grid">
+
+    <a class="card" href="/rily.html">
+      <div class="tkr">NASDAQ: RILY</div>
+      <div class="name">BRC Group Holdings (B. Riley)</div>
+      <div class="thesis">
+        Diversified financial services. Holding company with 31% of Babcock &amp; Wilcox plus 7 operating segments and ~$1.3B of senior debt. Trades at deep discount to liquidation value; debt market discounts solvency concerns. Includes corporate cap-gains tax modeling and a face↔market debt slider.
+      </div>
+      <div class="meta">
+        <span>Updated May 2026 · Q1'26 10-Q</span>
+        <span class="badge">● Live prices</span>
+      </div>
+    </a>
+
+    <!-- Add more workbook cards here as you publish them.
+         Copy the <a> block above, change href + tkr + name + thesis. -->
+
+  </div>
+
+  <h2 style="margin-top:36px">Coming soon</h2>
+  <div class="grid">
+    <div class="card soon">
+      <div class="tkr">Next up</div>
+      <div class="name">— your next workbook —</div>
+      <div class="thesis">Drop another HTML file in the repo, add a card here, push. Done.</div>
+      <div class="meta"><span>TBD</span><span class="badge">In progress</span></div>
+    </div>
+  </div>
+
+</main>
+
+<div class="footer">
+  <a href="https://deepvalueflow.com">deepvalueflow.com</a> · workbooks are educational; not investment advice
+</div>
+
+</body>
+</html>
