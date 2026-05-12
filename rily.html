@@ -319,10 +319,12 @@ const segments = [
   {name:"Consumer Products",  desc:"Targus laptop/tablet accessories",        rev:44.1,  invGain:0,     mult:0.5},
 ];
 
-// Other investments / cash
+// Other investments / cash. SpaceX is held via CARRIED INTEREST in funds that own SpaceX (Q1'26 10-Q),
+// not directly. Q1 2026 marked SpaceX at $526/share and added $12.6M to RILY's carry value.
 const otherInv = [
-  {name:"Securities & invest. owned ex-listed",   src:"10-Q",  carry:175.0, haircut:25}, // $640M total minus public above ~ residual
-  {name:"Equity investments (Targus, etc.)",      src:"10-Q",  carry:90.7,  haircut:30}, // less marketable
+  {name:"SpaceX exposure (via fund carried interest)", src:"Q1'26 call",  carry:80.0,  haircut:20}, // estimate, edit
+  {name:"Securities & invest. owned ex-listed",        src:"10-Q",        carry:95.0,  haircut:25}, // residual after public + SpaceX
+  {name:"Equity investments (Targus, etc.)",           src:"10-Q",        carry:90.7,  haircut:30}, // less marketable
 ];
 
 // Senior debt — face value. Market price col shows discount to face (buyback opportunity, not in NAV).
@@ -648,7 +650,7 @@ recalc();
 //
 // ============== LIVE PRICE FETCH ==============
 //
-import { priceMap } from "/shared/prices.js";
+import { priceMap as fetchPriceMap } from "/shared/prices.js";
 
 // Tickers we ask the proxy for: all public equity holdings + RILY itself + its baby bonds & preferreds.
 const LIVE_TICKERS = [
@@ -669,7 +671,7 @@ async function refreshPrices({force=false} = {}) {
   const old = btn.textContent;
   btn.textContent = "Fetching…";
   try {
-    const { map, fetchedAt, fromCache } = await priceMap(LIVE_TICKERS, { force });
+    const { map, fetchedAt, fromCache } = await fetchPriceMap(LIVE_TICKERS, { force });
     let updates = 0;
 
     // Equity holdings
