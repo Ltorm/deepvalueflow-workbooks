@@ -324,7 +324,7 @@ const segments = [
 const otherInv = [
   {name:"SpaceX exposure (via fund carried interest)", src:"Q1'26 call",  carry:80.0,  haircut:20}, // estimate, edit
   {name:"Securities & invest. owned ex-listed",        src:"10-Q",        carry:95.0,  haircut:25}, // residual after public + SpaceX
-  {name:"Equity investments (Targus, etc.)",           src:"10-Q",        carry:90.7,  haircut:30}, // less marketable
+  {name:"Equity-method investments (non-consolidated)", src:"10-Q",       carry:90.7,  haircut:30}, // minority stakes; Targus is consolidated, NOT in this line
 ];
 
 // Senior debt — face value. Market price col shows discount to face (buyback opportunity, not in NAV).
